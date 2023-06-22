@@ -5,6 +5,8 @@ import type { TFile } from 'obsidian';
 import * as path from 'path';
 
 import { CACHE_JSON_FILE } from './config';
+import { defaultStore } from './store';
+import { LocalStoreKey } from './types';
 
 function getCachePath() {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -37,7 +39,7 @@ export function checkImageFromCache(file: TFile) {
 	return cache[getItemKey(file)] ? true : false;
 }
 
-export function addImageToCache(file: TFile) {
+export async function addImageToCache(file: TFile) {
 	createCacheFile();
 
 	const cacheFilePath = getCachePath();
@@ -47,4 +49,16 @@ export function addImageToCache(file: TFile) {
 	cache[getItemKey(file)] = true;
 
 	fs.writeFileSync(cacheFilePath, JSON.stringify(cache));
+
+	const imageCount: string | null = await defaultStore.getItem(
+		LocalStoreKey.ImagesNumberAwaitingCompression,
+	);
+
+	if (imageCount) {
+		const newImageCount = Number(imageCount) - 1;
+
+		await (newImageCount > 0
+			? defaultStore.setItem(LocalStoreKey.ImagesNumberAwaitingCompression, newImageCount)
+			: defaultStore.removeItem(LocalStoreKey.ImagesNumberAwaitingCompression));
+	}
 }

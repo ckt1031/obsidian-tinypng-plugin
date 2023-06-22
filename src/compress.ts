@@ -16,8 +16,6 @@ export function getAllImages(app: App) {
 }
 
 async function compressSingle(apiKey: string, image: TFile) {
-	console.log(image);
-
 	try {
 		// Check if the image is already compressed
 		if (checkImageFromCache(image)) {
@@ -48,8 +46,8 @@ async function compressSingle(apiKey: string, image: TFile) {
 
 		await app.vault.modifyBinary(image, compressedImage.arrayBuffer);
 
-		// Get the hash of the compressed image
-		addImageToCache(image);
+		// Add the image to the cache
+		await addImageToCache(image);
 
 		return ImageStatus.Compressed;
 	} catch (error) {
@@ -73,12 +71,23 @@ export async function compressImages(settings: PluginSettings, images: TFile[]):
 	);
 
 	if (compressionStatus === CompressionStatus.Compressing) {
-		new Notice('Compression is already in progress.');
+		const imageCount: string | null = await defaultStore.getItem(
+			LocalStoreKey.ImagesNumberAwaitingCompression,
+		);
+
+		new Notice(
+			imageCount
+				? `There are ${imageCount} images awaiting compression.`
+				: 'Compression is already in progress.',
+		);
 		return;
 	}
 
 	// Set CompressionStatus to Compressing
 	await defaultStore.setItem(LocalStoreKey.CompressionStatus, CompressionStatus.Compressing);
+
+	// Set the images to be compressed
+	await defaultStore.setItem(LocalStoreKey.ImagesNumberAwaitingCompression, images.length);
 
 	// Get the concurrency from the settings
 	const concurrency: number | undefined = settings.concurrency;

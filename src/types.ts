@@ -16,4 +16,5 @@ export enum CompressionStatus {
 
 export enum LocalStoreKey {
 	CompressionStatus = 'compressionStatus',
+	ImagesNumberAwaitingCompression = 'imagesNumberAwaitingCompression',
 }
