@@ -1,15 +1,15 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+
 import { CACHE_JSON_FILE } from './config';
 
 function getCachePath() {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-expect-error
 	const vaultPath = app.vault.adapter.basePath as string;
 
 	// Get path with Windows, Linux, and Mac support
-	const cacheFilePath = path.join(vaultPath, CACHE_JSON_FILE);
-
-	return cacheFilePath;
+	return path.join(vaultPath, CACHE_JSON_FILE);
 }
 
 function createCacheFile() {

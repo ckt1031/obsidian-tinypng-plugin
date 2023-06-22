@@ -29,6 +29,8 @@ jobs:
 
       - run: pnpm i
 
+      - run: pnpm lint
+
       - run: pnpm build
 
       - uses: actions/upload-artifact@v3

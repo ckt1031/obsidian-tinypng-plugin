@@ -1,5 +1,7 @@
-import { App, PluginSettingTab, Setting } from 'obsidian';
-import TinypngPlugin from './main';
+import type { App} from 'obsidian';
+import { PluginSettingTab, Setting } from 'obsidian';
+
+import type TinypngPlugin from './main';
 
 export class SettingTab extends PluginSettingTab {
 	plugin: TinypngPlugin;
@@ -10,7 +12,7 @@ export class SettingTab extends PluginSettingTab {
 	}
 
 	display(): void {
-		const { containerEl } = this;
+		const { containerEl, plugin } = this;
 
 		containerEl.empty();
 		containerEl.createEl('h2', { text: 'Plugin Configurations:' });
@@ -21,10 +23,10 @@ export class SettingTab extends PluginSettingTab {
 			.addText(text =>
 				text
 					.setPlaceholder('Enter your secret')
-					.setValue(this.plugin.settings.apiKey)
+					.setValue(plugin.settings.apiKey)
 					.onChange(async value => {
-						this.plugin.settings.apiKey = value;
-						await this.plugin.saveSettings();
+						plugin.settings.apiKey = value;
+						await plugin.saveSettings();
 					}),
 			);
 
@@ -37,10 +39,10 @@ export class SettingTab extends PluginSettingTab {
 					.addOption('5', '5 (Default)')
 					.addOption('10', '3')
 					.addOption('20', '4')
-					.setValue(this.plugin.settings.concurrency.toString())
+					.setValue(plugin.settings.concurrency.toString())
 					.onChange(async value => {
-						this.plugin.settings.concurrency = parseInt(value);
-						await this.plugin.saveSettings();
+						plugin.settings.concurrency = Number.parseInt(value);
+						await plugin.saveSettings();
 					});
 			});
 	}

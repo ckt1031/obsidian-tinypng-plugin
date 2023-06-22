@@ -1,7 +1,8 @@
 import { addIcon, Plugin } from 'obsidian';
+
 import { compressImages, getAllImages } from './compress';
-import { PluginSettings } from './types';
 import { SettingTab } from './settings-tab';
+import type { PluginSettings } from './types';
 
 const DEFAULT_SETTINGS: PluginSettings = {
 	apiKey: '',
@@ -42,7 +43,9 @@ export default class TinypngPlugin extends Plugin {
 		this.addSettingTab(new SettingTab(this.app, this));
 	}
 
-	onunload() {}
+	onunload() {
+		// This is called when the plugin is deactivated
+	}
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());

@@ -1,26 +1,24 @@
-import { Notice, type App, type TFile, request, requestUrl } from 'obsidian';
-import { CompressionStatus, ImageStatus, LocalStoreKey, PluginSettings } from './types';
-import { checkImageFromCache, addImageToCache } from './cache';
+import { type App, Notice, request, requestUrl, type TFile } from 'obsidian';
+
+import { addImageToCache, checkImageFromCache } from './cache';
 import { defaultStore } from './store';
+import type { PluginSettings } from './types';
+import { CompressionStatus, ImageStatus, LocalStoreKey } from './types';
 
 export function getAllImages(app: App) {
 	const files = app.vault.getFiles();
 
 	// Get all images from the vault
-	const images = files.filter(file => {
+	return files.filter(file => {
 		const extension = file.extension;
 		return extension === 'png' || extension === 'jpg' || extension === 'jpeg';
 	});
-
-	return images;
 }
 
 async function calculateSHA256Hash(buffer: ArrayBuffer): Promise<string> {
 	const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-	const hashArray = Array.from(new Uint8Array(hashBuffer));
-	const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
-
-	return hashHex;
+	const hashArray = [...new Uint8Array(hashBuffer)];
+	return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
 async function compressSingle(apiKey: string, image: TFile) {
@@ -35,17 +33,19 @@ async function compressSingle(apiKey: string, image: TFile) {
 
 		const apiURL = 'https://api.tinify.com/shrink';
 
+		const key = btoa(`api:${apiKey}`);
+
 		const data = await request({
 			url: apiURL,
 			method: 'POST',
 			headers: {
-				Authorization: `Basic ${btoa(`api:${apiKey}`)}`,
+				Authorization: `Basic ${key}`,
 			},
 			body: await app.vault.readBinary(image),
 		});
 
 		// Get the compressed image url from Location header and replace the original
-		const compressedImageURL = JSON.parse(data).output.url;
+		const compressedImageURL: string = JSON.parse(data).output.url;
 
 		if (!compressedImageURL) {
 			return ImageStatus.Failed;
@@ -104,12 +104,23 @@ export async function compressImages(settings: PluginSettings, images: TFile[]):
 		promises.push(
 			compressSingle(apiKey, image)
 				.then(status => {
-					if (status === ImageStatus.Compressed) {
-						successCount++;
-					} else if (status === ImageStatus.AlreadyCompressed) {
-						bypassedCount++;
-					} else if (status === ImageStatus.Failed) {
-						failedCount++;
+					switch (status) {
+						case ImageStatus.Compressed: {
+							successCount++;
+
+							break;
+						}
+						case ImageStatus.AlreadyCompressed: {
+							bypassedCount++;
+
+							break;
+						}
+						case ImageStatus.Failed: {
+							failedCount++;
+
+							break;
+						}
+						// No default
 					}
 				})
 				.catch(error => {
