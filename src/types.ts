@@ -15,5 +15,5 @@ export enum CompressionStatus {
 }
 
 export enum LocalStoreKey {
-	CompressionStatus = "compressionStatus",
+	CompressionStatus = 'compressionStatus',
 }
