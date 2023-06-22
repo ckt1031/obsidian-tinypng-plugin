@@ -1,5 +1,7 @@
-import * as fs from 'node:fs';
-import * as path from 'node:path';
+/* eslint-disable unicorn/prefer-node-protocol */
+import * as fs from 'fs';
+// eslint-disable-next-line unicorn/import-style
+import * as path from 'path';
 
 import { CACHE_JSON_FILE } from './config';
 
