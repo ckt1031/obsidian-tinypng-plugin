@@ -37,8 +37,8 @@ export class SettingTab extends PluginSettingTab {
 				dropdown
 					.addOption('1', '1')
 					.addOption('5', '5 (Default)')
-					.addOption('10', '3')
-					.addOption('20', '4')
+					.addOption('10', '10')
+					.addOption('20', '20')
 					.setValue(plugin.settings.concurrency.toString())
 					.onChange(async value => {
 						plugin.settings.concurrency = Number.parseInt(value);
