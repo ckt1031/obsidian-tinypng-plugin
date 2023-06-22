@@ -1,5 +1,6 @@
 /* eslint-disable unicorn/prefer-node-protocol */
 import * as fs from 'fs';
+import type { TFile } from 'obsidian';
 // eslint-disable-next-line unicorn/import-style
 import * as path from 'path';
 
@@ -22,24 +23,28 @@ function createCacheFile() {
 	}
 }
 
-export function checkImageFromCache(hash: string) {
-	createCacheFile();
-
-	const cacheFilePath = getCachePath();
-
-	const cache = JSON.parse(fs.readFileSync(cacheFilePath, 'utf8'));
-
-	return cache[hash] ? true : false;
+function getItemKey(item: TFile) {
+	return encodeURIComponent(item.name) + String(item.stat.size);
 }
 
-export function addImageToCache(hash: string) {
+export function checkImageFromCache(file: TFile) {
 	createCacheFile();
 
 	const cacheFilePath = getCachePath();
 
 	const cache = JSON.parse(fs.readFileSync(cacheFilePath, 'utf8'));
 
-	cache[hash] = true;
+	return cache[getItemKey(file)] ? true : false;
+}
+
+export function addImageToCache(file: TFile) {
+	createCacheFile();
+
+	const cacheFilePath = getCachePath();
+
+	const cache = JSON.parse(fs.readFileSync(cacheFilePath, 'utf8'));
+
+	cache[getItemKey(file)] = true;
 
 	fs.writeFileSync(cacheFilePath, JSON.stringify(cache));
 }

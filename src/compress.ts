@@ -15,19 +15,12 @@ export function getAllImages(app: App) {
 	});
 }
 
-async function calculateSHA256Hash(buffer: ArrayBuffer): Promise<string> {
-	const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-	const hashArray = [...new Uint8Array(hashBuffer)];
-	return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
-}
-
 async function compressSingle(apiKey: string, image: TFile) {
-	try {
-		// Get the hash of the original image
-		const oldHash = await calculateSHA256Hash(await app.vault.readBinary(image));
+	console.log(image);
 
+	try {
 		// Check if the image is already compressed
-		if (checkImageFromCache(oldHash)) {
+		if (checkImageFromCache(image)) {
 			return ImageStatus.AlreadyCompressed;
 		}
 
@@ -52,14 +45,11 @@ async function compressSingle(apiKey: string, image: TFile) {
 		}
 
 		const compressedImage = await requestUrl(compressedImageURL);
-		const compressedImageArrayBuffer = compressedImage.arrayBuffer;
 
-		await app.vault.modifyBinary(image, compressedImageArrayBuffer);
-
-		const hash = await calculateSHA256Hash(compressedImageArrayBuffer);
+		await app.vault.modifyBinary(image, compressedImage.arrayBuffer);
 
 		// Get the hash of the compressed image
-		addImageToCache(hash);
+		addImageToCache(image);
 
 		return ImageStatus.Compressed;
 	} catch (error) {
