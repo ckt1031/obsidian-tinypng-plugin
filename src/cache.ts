@@ -1,27 +1,14 @@
-/* eslint-disable unicorn/prefer-node-protocol */
-import * as fs from 'fs';
-import type { TFile } from 'obsidian';
-// eslint-disable-next-line unicorn/import-style
-import * as path from 'path';
+import type { App, TFile } from 'obsidian';
 
 import { CACHE_JSON_FILE } from './config';
 import { defaultStore } from './store';
 import { LocalStoreKey } from './types';
 
-function getCachePath() {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-expect-error
-	const vaultPath = app.vault.adapter.basePath as string;
+async function createCacheFile(app: App) {
+	const cacheFileExists = await app.vault.adapter.exists(CACHE_JSON_FILE);
 
-	// Get path with Windows, Linux, and Mac support
-	return path.join(vaultPath, CACHE_JSON_FILE);
-}
-
-function createCacheFile() {
-	const cacheFilePath = getCachePath();
-
-	if (!fs.existsSync(cacheFilePath)) {
-		fs.writeFileSync(cacheFilePath, '{}');
+	if (!cacheFileExists) {
+		await app.vault.create(CACHE_JSON_FILE, '{}');
 	}
 }
 
@@ -29,26 +16,26 @@ function getItemKey(item: TFile) {
 	return encodeURIComponent(item.name) + String(item.stat.size);
 }
 
-export function checkImageFromCache(file: TFile) {
-	createCacheFile();
+export async function checkImageFromCache(app: App, file: TFile) {
+	await createCacheFile(app);
 
-	const cacheFilePath = getCachePath();
+	const cacheFile = await app.vault.adapter.read(CACHE_JSON_FILE);
 
-	const cache = JSON.parse(fs.readFileSync(cacheFilePath, 'utf8'));
+	const cache = JSON.parse(cacheFile);
 
 	return cache[getItemKey(file)] ? true : false;
 }
 
 export async function addImageToCache(file: TFile) {
-	createCacheFile();
+	await createCacheFile(app);
 
-	const cacheFilePath = getCachePath();
+	const cacheFile = await app.vault.adapter.read(CACHE_JSON_FILE);
 
-	const cache = JSON.parse(fs.readFileSync(cacheFilePath, 'utf8'));
+	const cache = JSON.parse(cacheFile);
 
 	cache[getItemKey(file)] = true;
 
-	fs.writeFileSync(cacheFilePath, JSON.stringify(cache));
+	await app.vault.adapter.write(CACHE_JSON_FILE, JSON.stringify(cache));
 
 	const imageCount: string | null = await defaultStore.getItem(
 		LocalStoreKey.ImagesNumberAwaitingCompression,

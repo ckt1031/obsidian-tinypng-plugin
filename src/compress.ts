@@ -18,7 +18,7 @@ export function getAllImages(app: App) {
 async function compressSingle(apiKey: string, image: TFile) {
 	try {
 		// Check if the image is already compressed
-		if (checkImageFromCache(image)) {
+		if (await checkImageFromCache(app, image)) {
 			return ImageStatus.AlreadyCompressed;
 		}
 
@@ -51,7 +51,9 @@ async function compressSingle(apiKey: string, image: TFile) {
 
 		return ImageStatus.Compressed;
 	} catch (error) {
-		console.error(error);
+		if (error instanceof Error) {
+			console.error(error.message);
+		}
 		return ImageStatus.Failed;
 	}
 }
