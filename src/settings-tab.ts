@@ -39,6 +39,7 @@ export class SettingTab extends PluginSettingTab {
 					.addOption('5', '5 (Default)')
 					.addOption('10', '10')
 					.addOption('20', '20')
+					.addOption('50', '50 (High CPU Usage)')
 					.setValue(plugin.settings.concurrency.toString())
 					.onChange(async value => {
 						plugin.settings.concurrency = Number.parseInt(value);
