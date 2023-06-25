@@ -1,7 +1,8 @@
 import type { App } from 'obsidian';
-import { PluginSettingTab, Setting } from 'obsidian';
+import { Notice, PluginSettingTab, Setting } from 'obsidian';
 
 import type TinypngPlugin from './main';
+import { defaultStore } from './store';
 
 export class SettingTab extends PluginSettingTab {
 	plugin: TinypngPlugin;
@@ -11,15 +12,22 @@ export class SettingTab extends PluginSettingTab {
 		this.plugin = plugin;
 	}
 
+	private static createFragmentWithHTML = (html: string) =>
+		createFragment(documentFragment => (documentFragment.createDiv().innerHTML = html));
+
 	display(): void {
 		const { containerEl, plugin } = this;
 
 		containerEl.empty();
-		containerEl.createEl('h2', { text: 'Plugin Configurations:' });
+		containerEl.createEl('h2', { text: 'General Configurations:' });
 
 		new Setting(containerEl)
 			.setName('API Key')
-			.setDesc('API Key for the tinypng service')
+			.setDesc(
+				SettingTab.createFragmentWithHTML(
+					'API Key for the tinypng service, you can get one <a href="https://tinify.com/dashboard/api" target="_blank">here</a>',
+				),
+			)
 			.addText(text =>
 				text
 					.setPlaceholder('Enter your secret')
@@ -45,6 +53,19 @@ export class SettingTab extends PluginSettingTab {
 						plugin.settings.concurrency = Number.parseInt(value);
 						await plugin.saveSettings();
 					});
+			});
+
+		containerEl.createEl('h2', { text: 'Debug Configurations:' });
+
+		// Add a button to reset the local store
+		new Setting(containerEl)
+			.setName('Reset Local Store')
+			.setDesc('This will reset the local store, which can fix some temporary issues.')
+			.addButton(button => {
+				button.setButtonText('Reset').onClick(async () => {
+					await defaultStore.clear();
+					new Notice('Local store has been reset');
+				});
 			});
 	}
 }
