@@ -1,5 +1,7 @@
 # Obsidian TingPNG Plugin
 
+This streamlines Obsidian workflows by integrating TinyPNG's image compression service.
+
 **Note: This is NOT an official plugin from the TingPNG team. It is a community plugin.**
 
 ## Installation
