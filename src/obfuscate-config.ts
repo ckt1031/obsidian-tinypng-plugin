@@ -1,7 +1,6 @@
 import { base64UrlDecode, base64UrlEncode } from './base64-url';
+import { CONFIG_ENCRYPT_KEY } from './config';
 import type { PluginSettings } from './types';
-
-const key = '7gT#5Z@8L^1pQ&3J*6K$9V+0bD%2eR!4fY'; // Replace with your own secret key
 
 export const reverseString = (s: string) => {
 	return [...s].reverse().join('');
@@ -33,7 +32,7 @@ export const deobfuscateConfig = (x: Record<string, string>) => {
 	}
 
 	// Apply XOR cipher
-	deobfuscatedConfig = xorCipher(deobfuscatedConfig, key);
+	deobfuscatedConfig = xorCipher(deobfuscatedConfig, CONFIG_ENCRYPT_KEY);
 
 	return JSON.parse(deobfuscatedConfig) as PluginSettings;
 };
@@ -46,7 +45,7 @@ export const obfuscateConfig = (x: PluginSettings | null | undefined) => {
 	let obfuscatedConfig = JSON.stringify(x);
 
 	// Apply XOR cipher
-	obfuscatedConfig = xorCipher(obfuscatedConfig, key);
+	obfuscatedConfig = xorCipher(obfuscatedConfig, CONFIG_ENCRYPT_KEY);
 
 	// Apply multiple rounds of base64 encoding
 	for (let i = 0; i < 3; i++) {
