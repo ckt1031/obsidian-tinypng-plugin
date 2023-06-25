@@ -1,6 +1,7 @@
 import { addIcon, Plugin } from 'obsidian';
 
 import { compressImages, getAllImages } from './compress';
+import { deobfuscateConfig, obfuscateConfig } from './obfuscate-config';
 import { SettingTab } from './settings-tab';
 import type { PluginSettings } from './types';
 
@@ -48,10 +49,14 @@ export default class TinypngPlugin extends Plugin {
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		this.settings = Object.assign(
+			{},
+			DEFAULT_SETTINGS,
+			deobfuscateConfig((await this.loadData()) as Record<string, string>),
+		);
 	}
 
 	async saveSettings() {
-		await this.saveData(this.settings);
+		await this.saveData(obfuscateConfig(this.settings));
 	}
 }

@@ -1,7 +1,7 @@
 import { type App, Notice, request, requestUrl, type TFile } from 'obsidian';
 
 import { addImageToCache, checkImageFromCache } from './cache';
-import { defaultStore } from './store';
+import store from './store';
 import type { PluginSettings } from './types';
 import { CompressionStatus, ImageStatus, LocalStoreKey } from './types';
 
@@ -68,12 +68,12 @@ export async function compressImages(settings: PluginSettings, images: TFile[]):
 	}
 
 	// Reject if compression is already in progress
-	const compressionStatus: CompressionStatus | null = await defaultStore.getItem(
+	const compressionStatus: CompressionStatus | null = await store.get(
 		LocalStoreKey.CompressionStatus,
 	);
 
 	if (compressionStatus === CompressionStatus.Compressing) {
-		const imageCount: string | null = await defaultStore.getItem(
+		const imageCount: string | null = await store.get(
 			LocalStoreKey.ImagesNumberAwaitingCompression,
 		);
 
@@ -86,10 +86,10 @@ export async function compressImages(settings: PluginSettings, images: TFile[]):
 	}
 
 	// Set CompressionStatus to Compressing
-	await defaultStore.setItem(LocalStoreKey.CompressionStatus, CompressionStatus.Compressing);
+	store.set(LocalStoreKey.CompressionStatus, CompressionStatus.Compressing);
 
 	// Set the images to be compressed
-	await defaultStore.setItem(LocalStoreKey.ImagesNumberAwaitingCompression, images.length);
+	store.set(LocalStoreKey.ImagesNumberAwaitingCompression, images.length);
 
 	// Get the concurrency from the settings
 	const concurrency: number | undefined = settings.concurrency;
@@ -139,7 +139,7 @@ export async function compressImages(settings: PluginSettings, images: TFile[]):
 	await Promise.all(promises);
 
 	// Set CompressionStatus to idle
-	await defaultStore.setItem(LocalStoreKey.CompressionStatus, CompressionStatus.Idle);
+	store.set(LocalStoreKey.CompressionStatus, CompressionStatus.Idle);
 
 	new Notice(
 		`Compression complete. Success: ${successCount}, Ignored: ${bypassedCount}, Failed: ${failedCount}`,

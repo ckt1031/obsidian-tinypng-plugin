@@ -2,7 +2,7 @@ import type { App } from 'obsidian';
 import { Notice, PluginSettingTab, Setting } from 'obsidian';
 
 import type TinypngPlugin from './main';
-import { defaultStore } from './store';
+import store from './store';
 
 export class SettingTab extends PluginSettingTab {
 	plugin: TinypngPlugin;
@@ -62,8 +62,8 @@ export class SettingTab extends PluginSettingTab {
 			.setName('Reset Local Store')
 			.setDesc('This will reset the local store, which can fix some temporary issues.')
 			.addButton(button => {
-				button.setButtonText('Reset').onClick(async () => {
-					await defaultStore.clear();
+				button.setButtonText('Reset').onClick(() => {
+					store.clear();
 					new Notice('Local store has been reset');
 				});
 			});

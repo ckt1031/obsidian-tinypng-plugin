@@ -1,7 +1,7 @@
 import type { App, TFile } from 'obsidian';
 
 import { CACHE_JSON_FILE } from './config';
-import { defaultStore } from './store';
+import store from './store';
 import { LocalStoreKey } from './types';
 
 async function createCacheFile(app: App) {
@@ -37,15 +37,13 @@ export async function addImageToCache(file: TFile) {
 
 	await app.vault.adapter.write(CACHE_JSON_FILE, JSON.stringify(cache));
 
-	const imageCount: string | null = await defaultStore.getItem(
-		LocalStoreKey.ImagesNumberAwaitingCompression,
-	);
+	const imageCount: string | null = store.get(LocalStoreKey.ImagesNumberAwaitingCompression);
 
 	if (imageCount) {
 		const newImageCount = Number(imageCount) - 1;
 
-		await (newImageCount > 0
-			? defaultStore.setItem(LocalStoreKey.ImagesNumberAwaitingCompression, newImageCount)
-			: defaultStore.removeItem(LocalStoreKey.ImagesNumberAwaitingCompression));
+		newImageCount > 0
+			? store.set(LocalStoreKey.ImagesNumberAwaitingCompression, newImageCount)
+			: store.remove(LocalStoreKey.ImagesNumberAwaitingCompression);
 	}
 }

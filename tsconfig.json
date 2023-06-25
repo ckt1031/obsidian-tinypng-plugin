@@ -6,10 +6,10 @@
 		"inlineSourceMap": true,
 		"inlineSources": true,
 		"isolatedModules": true,
-		"noEmit": true,
 		"lib": ["DOM", "es2023"],
 		"module": "ESNext",
 		"moduleResolution": "node",
+		"noEmit": true,
 		"noImplicitAny": true,
 		"strictNullChecks": true,
 		"target": "ES6"
