@@ -31,9 +31,26 @@ export class SettingTab extends PluginSettingTab {
 			.addText(text =>
 				text
 					.setPlaceholder('Enter your secret')
-					.setValue(plugin.settings.apiKey)
+					.setValue(plugin.settings.tinypngApiKey)
 					.onChange(async value => {
-						plugin.settings.apiKey = value;
+						plugin.settings.tinypngApiKey = value;
+						await plugin.saveSettings();
+					}),
+			);
+
+		new Setting(containerEl)
+			.setName('TinyPNG Base URL')
+			.setDesc(
+				SettingTab.createFragmentWithHTML(
+					'Base URL for the tinypng service, defaults to <code>https://api.tinify.com</code>',
+				),
+			)
+			.addText(text =>
+				text
+					.setPlaceholder('Enter your base URL')
+					.setValue(plugin.settings.tinypngBaseUrl)
+					.onChange(async value => {
+						plugin.settings.tinypngBaseUrl = value;
 						await plugin.saveSettings();
 					}),
 			);

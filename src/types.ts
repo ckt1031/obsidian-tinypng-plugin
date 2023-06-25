@@ -1,5 +1,6 @@
 export interface PluginSettings {
-	apiKey: string;
+	tinypngApiKey: string;
+	tinypngBaseUrl: string;
 	concurrency: number;
 }
 

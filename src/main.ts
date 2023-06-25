@@ -6,7 +6,8 @@ import { SettingTab } from './settings-tab';
 import type { PluginSettings } from './types';
 
 const DEFAULT_SETTINGS: PluginSettings = {
-	apiKey: '',
+	tinypngApiKey: '',
+	tinypngBaseUrl: 'https://api.tinify.com',
 	concurrency: 5,
 };
 

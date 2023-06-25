@@ -15,16 +15,16 @@ export function getAllImages(app: App) {
 	});
 }
 
-async function compressSingle(apiKey: string, image: TFile) {
+async function compressSingle(settings: PluginSettings, image: TFile) {
 	try {
 		// Check if the image is already compressed
 		if (await checkImageFromCache(app, image)) {
 			return ImageStatus.AlreadyCompressed;
 		}
 
-		const apiURL = 'https://api.tinify.com/shrink';
+		const apiURL = `${settings.tinypngBaseUrl}/shrink`;
 
-		const key = btoa(`api:${apiKey}`);
+		const key = btoa(`api:${settings.tinypngApiKey}`);
 
 		const data = await request({
 			url: apiURL,
@@ -60,7 +60,7 @@ async function compressSingle(apiKey: string, image: TFile) {
 
 export async function compressImages(settings: PluginSettings, images: TFile[]): Promise<void> {
 	// Get the API key from the settings
-	const apiKey: string | undefined = settings.apiKey;
+	const apiKey: string | undefined = settings.tinypngApiKey;
 
 	if (!apiKey) {
 		new Notice('Please enter an API key in the settings.');
@@ -103,7 +103,7 @@ export async function compressImages(settings: PluginSettings, images: TFile[]):
 
 	for (const image of images) {
 		promises.push(
-			compressSingle(apiKey, image)
+			compressSingle(settings, image)
 				.then(status => {
 					switch (status) {
 						case ImageStatus.Compressed: {
