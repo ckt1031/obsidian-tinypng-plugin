@@ -19,8 +19,7 @@ export class SettingTab extends PluginSettingTab {
 		const { containerEl, plugin } = this;
 
 		containerEl.empty();
-		containerEl.createEl('h2', { text: 'General' });
-
+		
 		new Setting(containerEl)
 			.setName('API Key')
 			.setDesc(
