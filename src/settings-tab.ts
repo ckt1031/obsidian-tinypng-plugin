@@ -19,7 +19,7 @@ export class SettingTab extends PluginSettingTab {
 		const { containerEl, plugin } = this;
 
 		containerEl.empty();
-		containerEl.createEl('h2', { text: 'General Configurations:' });
+		containerEl.createEl('h2', { text: 'General' });
 
 		new Setting(containerEl)
 			.setName('API Key')
@@ -72,7 +72,7 @@ export class SettingTab extends PluginSettingTab {
 					});
 			});
 
-		containerEl.createEl('h2', { text: 'Debug Configurations:' });
+		containerEl.createEl('h2', { text: 'Debug' });
 
 		// Add a button to reset the local store
 		new Setting(containerEl)
