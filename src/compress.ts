@@ -68,12 +68,12 @@ export async function compressImages(settings: PluginSettings, images: TFile[]):
 	}
 
 	// Reject if compression is already in progress
-	const compressionStatus: CompressionStatus | null = await store.get(
+	const compressionStatus: CompressionStatus | null = await store.getItem(
 		LocalStoreKey.CompressionStatus,
 	);
 
 	if (compressionStatus === CompressionStatus.Compressing) {
-		const imageCount: string | null = await store.get(
+		const imageCount: string | null = await store.getItem(
 			LocalStoreKey.ImagesNumberAwaitingCompression,
 		);
 
@@ -86,10 +86,10 @@ export async function compressImages(settings: PluginSettings, images: TFile[]):
 	}
 
 	// Set CompressionStatus to Compressing
-	store.set(LocalStoreKey.CompressionStatus, CompressionStatus.Compressing);
+	await store.setItem(LocalStoreKey.CompressionStatus, CompressionStatus.Compressing);
 
 	// Set the images to be compressed
-	store.set(LocalStoreKey.ImagesNumberAwaitingCompression, images.length);
+	await store.setItem(LocalStoreKey.ImagesNumberAwaitingCompression, images.length);
 
 	// Get the concurrency from the settings
 	const concurrency: number | undefined = settings.concurrency;
@@ -139,7 +139,7 @@ export async function compressImages(settings: PluginSettings, images: TFile[]):
 	await Promise.all(promises);
 
 	// Set CompressionStatus to idle
-	store.set(LocalStoreKey.CompressionStatus, CompressionStatus.Idle);
+	await store.setItem(LocalStoreKey.CompressionStatus, CompressionStatus.Idle);
 
 	new Notice(
 		`Compression complete. Success: ${successCount}, Ignored: ${bypassedCount}, Failed: ${failedCount}`,

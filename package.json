@@ -29,5 +29,8 @@
 		"vitest": "0.32.2"
 	},
 	"packageManager": "pnpm@8.6.5",
-	"prettier": "@ckt1031/prettier-config"
+	"prettier": "@ckt1031/prettier-config",
+	"dependencies": {
+		"localforage": "1.10.0"
+	}
 }

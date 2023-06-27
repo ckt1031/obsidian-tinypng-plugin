@@ -37,13 +37,15 @@ export async function addImageToCache(file: TFile) {
 
 	await app.vault.adapter.write(CACHE_JSON_FILE, JSON.stringify(cache));
 
-	const imageCount: string | null = store.get(LocalStoreKey.ImagesNumberAwaitingCompression);
+	const imageCount: string | null = await store.getItem(
+		LocalStoreKey.ImagesNumberAwaitingCompression,
+	);
 
 	if (imageCount) {
 		const newImageCount = Number(imageCount) - 1;
 
-		newImageCount > 0
-			? store.set(LocalStoreKey.ImagesNumberAwaitingCompression, newImageCount)
-			: store.remove(LocalStoreKey.ImagesNumberAwaitingCompression);
+		await (newImageCount > 0
+			? store.setItem(LocalStoreKey.ImagesNumberAwaitingCompression, newImageCount)
+			: store.removeItem(LocalStoreKey.ImagesNumberAwaitingCompression));
 	}
 }

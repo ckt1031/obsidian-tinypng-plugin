@@ -78,8 +78,8 @@ export class SettingTab extends PluginSettingTab {
 			.setName('Reset Local Store')
 			.setDesc('This will reset the local store, which can fix some temporary issues.')
 			.addButton(button => {
-				button.setButtonText('Reset').onClick(() => {
-					store.clear();
+				button.setButtonText('Reset').onClick(async () => {
+					await store.clear();
 					new Notice('Local store has been reset');
 				});
 			});
