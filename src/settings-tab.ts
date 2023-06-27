@@ -19,7 +19,7 @@ export class SettingTab extends PluginSettingTab {
 		const { containerEl, plugin } = this;
 
 		containerEl.empty();
-		
+
 		new Setting(containerEl)
 			.setName('API Key')
 			.setDesc(

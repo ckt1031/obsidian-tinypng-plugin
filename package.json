@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-tinypng-plugin",
-	"version": "0.0.4",
+	"version": "0.1.0",
 	"description": "Obsidian plugin for compressing images with TinyPNG",
 	"license": "MIT",
 	"author": "ckt1031",
@@ -13,6 +13,9 @@
 		"lint:fix": "eslint . --ext .ts,.js,.mjs --fix",
 		"test": "vitest run",
 		"version": "node version-bump.mjs && git add manifest.json versions.json"
+	},
+	"dependencies": {
+		"localforage": "1.10.0"
 	},
 	"devDependencies": {
 		"@ckt1031/eslint-config": "1.1.9",
@@ -29,8 +32,5 @@
 		"vitest": "0.32.2"
 	},
 	"packageManager": "pnpm@8.6.5",
-	"prettier": "@ckt1031/prettier-config",
-	"dependencies": {
-		"localforage": "1.10.0"
-	}
+	"prettier": "@ckt1031/prettier-config"
 }
