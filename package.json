@@ -15,7 +15,8 @@
 		"version": "node version-bump.mjs && git add manifest.json versions.json"
 	},
 	"dependencies": {
-		"localforage": "1.10.0"
+		"localforage": "1.10.0",
+		"zod": "3.21.4"
 	},
 	"devDependencies": {
 		"@ckt1031/eslint-config": "1.1.9",

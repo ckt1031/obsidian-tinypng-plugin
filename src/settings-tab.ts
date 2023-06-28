@@ -73,7 +73,6 @@ export class SettingTab extends PluginSettingTab {
 
 		containerEl.createEl('h2', { text: 'Debug' });
 
-		// Add a button to reset the local store
 		new Setting(containerEl)
 			.setName('Reset Local Store')
 			.setDesc('This will reset the local store, which can fix some temporary issues.')

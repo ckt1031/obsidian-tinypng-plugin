@@ -1,13 +1,19 @@
-export interface PluginSettings {
-	tinypngApiKey: string;
-	tinypngBaseUrl: string;
-	concurrency: number;
-}
+import { z } from 'zod';
 
-export interface ObfuscatedPluginSettings {
-	_NOTICE: string;
-	j: string;
-}
+export const PluginSettingsSchema = z.object({
+	tinypngApiKey: z.string(),
+	tinypngBaseUrl: z.string(),
+	concurrency: z.number(),
+});
+
+export const ObfuscatedPluginSettingsSchema = z.object({
+	_NOTICE: z.string(),
+	j: z.string(),
+});
+
+export type PluginSettings = z.infer<typeof PluginSettingsSchema>;
+
+export type ObfuscatedPluginSettings = z.infer<typeof ObfuscatedPluginSettingsSchema>;
 
 export enum ImageStatus {
 	Compressed = 0,
