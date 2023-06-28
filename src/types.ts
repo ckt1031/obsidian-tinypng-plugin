@@ -4,6 +4,11 @@ export interface PluginSettings {
 	concurrency: number;
 }
 
+export interface ObfuscatedPluginSettings {
+	_NOTICE: string;
+	j: string;
+}
+
 export enum ImageStatus {
 	Compressed = 0,
 	AlreadyCompressed = 1,

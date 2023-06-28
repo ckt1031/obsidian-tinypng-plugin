@@ -3,7 +3,7 @@ import { addIcon, Plugin } from 'obsidian';
 import { compressImages, getAllImages } from './compress';
 import { deobfuscateConfig, obfuscateConfig } from './obfuscate-config';
 import { SettingTab } from './settings-tab';
-import type { PluginSettings } from './types';
+import type { ObfuscatedPluginSettings, PluginSettings } from './types';
 
 const DEFAULT_SETTINGS: PluginSettings = {
 	tinypngApiKey: '',
@@ -50,11 +50,9 @@ export default class TinypngPlugin extends Plugin {
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign(
-			{},
-			DEFAULT_SETTINGS,
-			deobfuscateConfig((await this.loadData()) as Record<string, string>),
-		);
+		const localData: ObfuscatedPluginSettings = await this.loadData();
+
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, deobfuscateConfig(localData));
 	}
 
 	async saveSettings() {
