@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-tinypng-plugin",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "Obsidian plugin for compressing images with TinyPNG",
 	"license": "MIT",
 	"author": "ckt1031",
