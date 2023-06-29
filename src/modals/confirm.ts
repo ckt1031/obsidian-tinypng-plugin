@@ -18,27 +18,30 @@ export default class ConfirmModal extends Modal {
 
 	onOpen() {
 		const { contentEl, onCancel } = this;
-		contentEl.setText('Are you sure you want to proceed?');
 
-		new Setting(contentEl).addButton(btn =>
-			btn
-				.setButtonText('Confirm')
-				.setCta()
-				.onClick(async () => {
-					this.close();
-					await this.onConfirm();
-				}),
-		);
+		contentEl.createEl('h4', { text: 'Are you sure you want to proceed?' });
 
-		new Setting(contentEl).addButton(btn =>
-			btn
-				.setButtonText('Cancel')
-				.setCta()
-				.onClick(async () => {
-					this.close();
-					if (onCancel) await onCancel();
-				}),
-		);
+		contentEl.createEl('p', { text: 'This action cannot be undone, please confirm to proceed.' });
+
+		new Setting(contentEl)
+			.addButton(btn =>
+				btn
+					.setButtonText('Confirm')
+					.setCta()
+					.onClick(async () => {
+						this.close();
+						await this.onConfirm();
+					}),
+			)
+			.addButton(btn =>
+				btn
+					.setButtonText('Cancel')
+					.setCta()
+					.onClick(async () => {
+						this.close();
+						if (onCancel) await onCancel();
+					}),
+			);
 	}
 
 	onClose() {

@@ -80,7 +80,9 @@ export class SettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName('Reset Local Store')
 			.setDesc(
-				'<b>This is a debug option!</b> This will reset the local store, which can fix some temporary issues.',
+				SettingTab.createFragmentWithHTML(
+					'<b>This is a debug option!</b> This will reset the local store, which can fix some temporary issues.',
+				),
 			)
 			.addButton(button => {
 				button.setButtonText('Reset').onClick(() => {
