@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
 		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
 		"baseUrl": ".",
 		"importHelpers": true,
 		"inlineSourceMap": true,
@@ -10,9 +11,8 @@
 		"module": "ESNext",
 		"moduleResolution": "node",
 		"noEmit": true,
-		"resolveJsonModule": true,
-		"allowSyntheticDefaultImports": true,
 		"noImplicitAny": true,
+		"resolveJsonModule": true,
 		"strictNullChecks": true,
 		"target": "ES6"
 	},
