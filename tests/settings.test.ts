@@ -33,6 +33,6 @@ describe('obfuscateConfig and deobfuscateConfig', () => {
 		expect(obfuscateConfig(undefined)).toBeUndefined();
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-expect-error
-		expect(deobfuscateConfig({})).toBeNull();
+		expect(deobfuscateConfig({})).toBeUndefined();
 	});
 });
