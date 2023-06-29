@@ -1,6 +1,7 @@
 import type { App } from 'obsidian';
 import { Notice, PluginSettingTab, Setting } from 'obsidian';
 
+import manifest from '../manifest.json';
 import type TinypngPlugin from './main';
 import store from './store';
 
@@ -19,6 +20,8 @@ export class SettingTab extends PluginSettingTab {
 		const { containerEl, plugin } = this;
 
 		containerEl.empty();
+
+		containerEl.createEl('h1', { text: manifest.name });
 
 		new Setting(containerEl)
 			.setName('API Key')
@@ -70,8 +73,6 @@ export class SettingTab extends PluginSettingTab {
 						await plugin.saveSettings();
 					});
 			});
-
-		containerEl.createEl('h2', { text: 'Debug' });
 
 		new Setting(containerEl)
 			.setName('Reset Local Store')

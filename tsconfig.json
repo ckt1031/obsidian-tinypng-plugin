@@ -10,6 +10,8 @@
 		"module": "ESNext",
 		"moduleResolution": "node",
 		"noEmit": true,
+		"resolveJsonModule": true,
+		"allowSyntheticDefaultImports": true,
 		"noImplicitAny": true,
 		"strictNullChecks": true,
 		"target": "ES6"
