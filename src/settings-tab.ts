@@ -3,6 +3,7 @@ import { Notice, PluginSettingTab, Setting } from 'obsidian';
 
 import manifest from '../manifest.json';
 import type TinypngPlugin from './main';
+import ConfirmModal from './modals/confirm';
 import store from './store';
 
 export class SettingTab extends PluginSettingTab {
@@ -17,7 +18,7 @@ export class SettingTab extends PluginSettingTab {
 		createFragment(documentFragment => (documentFragment.createDiv().innerHTML = html));
 
 	display(): void {
-		const { containerEl, plugin } = this;
+		const { containerEl, plugin, app } = this;
 
 		containerEl.empty();
 
@@ -78,9 +79,11 @@ export class SettingTab extends PluginSettingTab {
 			.setName('Reset Local Store')
 			.setDesc('This will reset the local store, which can fix some temporary issues.')
 			.addButton(button => {
-				button.setButtonText('Reset').onClick(async () => {
-					await store.clear();
-					new Notice('Local store has been reset');
+				button.setButtonText('Reset').onClick(() => {
+					new ConfirmModal(app, async () => {
+						await store.clear();
+						new Notice('Local store has been reset');
+					}).open();
 				});
 			});
 	}
