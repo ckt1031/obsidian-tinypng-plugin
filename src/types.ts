@@ -15,7 +15,11 @@ export type PluginSettings = z.infer<typeof PluginSettingsSchema>;
 
 export type ObfuscatedPluginSettings = z.infer<typeof ObfuscatedPluginSettingsSchema>;
 
-export enum ImageStatus {
+export enum ImageCacheStatus {
+	Compressed = 1,
+}
+
+export enum ImageCompressionProgressStatus {
 	Compressed = 0,
 	AlreadyCompressed = 1,
 	Failed = 99,

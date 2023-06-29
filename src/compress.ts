@@ -3,7 +3,7 @@ import { type App, Notice, request, requestUrl, type TFile } from 'obsidian';
 import { addImageToCache, checkImageFromCache } from './cache';
 import store from './store';
 import type { PluginSettings } from './types';
-import { CompressionStatus, ImageStatus, LocalStoreKey } from './types';
+import { CompressionStatus, ImageCompressionProgressStatus, LocalStoreKey } from './types';
 
 export function getAllImages(app: App) {
 	const files = app.vault.getFiles();
@@ -19,7 +19,7 @@ async function compressSingle(settings: PluginSettings, image: TFile) {
 	try {
 		// Check if the image is already compressed
 		if (await checkImageFromCache(app, image)) {
-			return ImageStatus.AlreadyCompressed;
+			return ImageCompressionProgressStatus.AlreadyCompressed;
 		}
 
 		const apiURL = `${settings.tinypngBaseUrl}/shrink`;
@@ -39,7 +39,7 @@ async function compressSingle(settings: PluginSettings, image: TFile) {
 		const compressedImageURL: string = JSON.parse(data).output.url;
 
 		if (!compressedImageURL) {
-			return ImageStatus.Failed;
+			return ImageCompressionProgressStatus.Failed;
 		}
 
 		const compressedImage = await requestUrl(compressedImageURL);
@@ -49,12 +49,12 @@ async function compressSingle(settings: PluginSettings, image: TFile) {
 		// Add the image to the cache
 		await addImageToCache(image);
 
-		return ImageStatus.Compressed;
+		return ImageCompressionProgressStatus.Compressed;
 	} catch (error) {
 		if (error instanceof Error) {
 			console.error(error.message);
 		}
-		return ImageStatus.Failed;
+		return ImageCompressionProgressStatus.Failed;
 	}
 }
 
@@ -106,17 +106,17 @@ export async function compressImages(settings: PluginSettings, images: TFile[]):
 			compressSingle(settings, image)
 				.then(status => {
 					switch (status) {
-						case ImageStatus.Compressed: {
+						case ImageCompressionProgressStatus.Compressed: {
 							successCount++;
 
 							break;
 						}
-						case ImageStatus.AlreadyCompressed: {
+						case ImageCompressionProgressStatus.AlreadyCompressed: {
 							bypassedCount++;
 
 							break;
 						}
-						case ImageStatus.Failed: {
+						case ImageCompressionProgressStatus.Failed: {
 							failedCount++;
 
 							break;
