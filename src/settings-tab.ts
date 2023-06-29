@@ -2,6 +2,8 @@ import type { App } from 'obsidian';
 import { Notice, PluginSettingTab, Setting } from 'obsidian';
 
 import manifest from '../manifest.json';
+import { addImageToCache, clearCache } from './cache';
+import { getAllImages } from './compress';
 import type TinypngPlugin from './main';
 import ConfirmModal from './modals/confirm';
 import store from './store';
@@ -77,12 +79,49 @@ export class SettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Reset Local Store')
-			.setDesc('This will reset the local store, which can fix some temporary issues.')
+			.setDesc(
+				'<b>This is a debug option!</b> This will reset the local store, which can fix some temporary issues.',
+			)
 			.addButton(button => {
 				button.setButtonText('Reset').onClick(() => {
 					new ConfirmModal(app, async () => {
 						await store.clear();
 						new Notice('Local store has been reset');
+					}).open();
+				});
+			});
+
+		new Setting(containerEl)
+			.setName('Save all image to cache without compression')
+			.setDesc(
+				SettingTab.createFragmentWithHTML(
+					'<b>This is a debug option!</b> If you are certain that all images are compressed and you have lost the cache file, you can use this option to temporarily recover the cache file.',
+				),
+			)
+			.addButton(button => {
+				button.setButtonText('Reset').onClick(() => {
+					new ConfirmModal(app, async () => {
+						const allImages = getAllImages(app);
+						for (const image of allImages) {
+							await addImageToCache(image);
+						}
+						new Notice('All images have been added to the cache');
+					}).open();
+				});
+			});
+
+		new Setting(containerEl)
+			.setName('Clear all images records from cache')
+			.setDesc(
+				SettingTab.createFragmentWithHTML(
+					'<b>This is a debug and VERY DANGEROUS option!</b> You will lose all the records of the images that have been compressed. This will not delete the images themselves, but you will be compressing them again.',
+				),
+			)
+			.addButton(button => {
+				button.setButtonText('Reset').onClick(() => {
+					new ConfirmModal(app, async () => {
+						await clearCache();
+						new Notice('All images have been removed from the cache');
 					}).open();
 				});
 			});

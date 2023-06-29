@@ -52,3 +52,7 @@ export async function addImageToCache(file: TFile) {
 			: store.removeItem(LocalStoreKey.ImagesNumberAwaitingCompression));
 	}
 }
+
+export async function clearCache() {
+	await app.vault.adapter.write(CACHE_JSON_FILE, '{}');
+}
