@@ -1,17 +1,24 @@
-import { type App, Notice, request, requestUrl, type TFile } from 'obsidian';
+import { Notice, request, requestUrl, type TFile } from 'obsidian';
 
 import { addImageToCache, checkImageFromCache } from './cache';
+import type TinypngPlugin from './main';
 import store from './store';
 import type { PluginSettings } from './types';
 import { CompressionStatus, ImageCompressionProgressStatus, LocalStoreKey } from './types';
 
-export function getAllImages(app: App) {
-	const files = app.vault.getFiles();
+export function getAllImages(plugin: TinypngPlugin) {
+	const files = plugin.app.vault.getFiles();
 
 	// Get all images from the vault
 	return files.filter(file => {
 		const extension = file.extension;
-		return extension === 'png' || extension === 'jpg' || extension === 'jpeg';
+		const isExtensionValid = extension === 'png' || extension === 'jpg' || extension === 'jpeg';
+
+		const isIgnored = plugin.settings.ignoredFolders.some(folder => {
+			return file.path.startsWith(folder);
+		});
+
+		return isExtensionValid && !isIgnored;
 	});
 }
 

@@ -13,6 +13,7 @@ const DEFAULT_SETTINGS: PluginSettings = {
 	tinypngApiKey: '',
 	tinypngBaseUrl: 'https://api.tinify.com',
 	concurrency: 5,
+	ignoredFolders: [],
 };
 
 export default class TinypngPlugin extends Plugin {
@@ -31,7 +32,7 @@ export default class TinypngPlugin extends Plugin {
 
 		// This creates an icon in the left ribbon.
 		this.addRibbonIcon('compress', 'Compress images', async () => {
-			const images = getAllImages(this.app);
+			const images = getAllImages(this);
 			await compressImages(this.settings, images);
 		});
 
@@ -40,7 +41,7 @@ export default class TinypngPlugin extends Plugin {
 			id: 'compress-images',
 			name: 'Compress images in the current vault',
 			callback: async () => {
-				const images = getAllImages(this.app);
+				const images = getAllImages(this);
 				await compressImages(this.settings, images);
 			},
 		});

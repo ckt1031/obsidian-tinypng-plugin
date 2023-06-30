@@ -5,6 +5,7 @@ import manifest from '../manifest.json';
 import { addImageToCache, clearCache } from './cache';
 import { getAllImages } from './compress';
 import type TinypngPlugin from './main';
+import AddIgnoredFolderModal from './modals/add-custom-prompt';
 import ConfirmModal from './modals/confirm';
 import store from './store';
 
@@ -103,7 +104,7 @@ export class SettingTab extends PluginSettingTab {
 			.addButton(button => {
 				button.setButtonText('Reset').onClick(() => {
 					new ConfirmModal(app, async () => {
-						const allImages = getAllImages(app);
+						const allImages = getAllImages(plugin);
 						for (const image of allImages) {
 							await addImageToCache(image);
 						}
@@ -127,5 +128,38 @@ export class SettingTab extends PluginSettingTab {
 					}).open();
 				});
 			});
+
+		containerEl.createEl('h2', { text: 'Ignored Folders' });
+
+		new Setting(containerEl)
+			.setName('Add')
+			.setDesc('Add a folder to the ignored folders list')
+			.addButton(button => {
+				button.setButtonText('Add').onClick(async () => {
+					await (plugin as any).app.setting.close();
+					new AddIgnoredFolderModal(plugin).open();
+				});
+			});
+
+		for (const path of plugin.settings.ignoredFolders) {
+			new Setting(containerEl).setName(path).addButton(btn => {
+				btn.setIcon('cross');
+				btn.setTooltip('Delete this folder from the ignored folders list');
+				btn.onClick(async () => {
+					if (btn.buttonEl.textContent === '') {
+						btn.setButtonText('Click once more to confirm removal');
+						setTimeout(() => {
+							btn.setIcon('cross');
+						}, 5000);
+					} else {
+						if (btn.buttonEl.parentElement?.parentElement) {
+							btn.buttonEl.parentElement.parentElement.remove();
+						}
+						plugin.settings.ignoredFolders = plugin.settings.ignoredFolders.filter(p => p !== path);
+						await plugin.saveSettings();
+					}
+				});
+			});
+		}
 	}
 }

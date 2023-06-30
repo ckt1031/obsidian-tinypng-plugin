@@ -7,6 +7,7 @@ const DEFAULT_SETTINGS: PluginSettings = {
 	tinypngApiKey: 'FAKE_API_KEY',
 	tinypngBaseUrl: 'https://api.example.com',
 	concurrency: 20,
+	ignoredFolders: ['node_modules', '.git'],
 };
 
 describe('obfuscateConfig and deobfuscateConfig', () => {

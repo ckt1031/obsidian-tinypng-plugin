@@ -4,6 +4,7 @@ export const PluginSettingsSchema = z.object({
 	tinypngApiKey: z.string(),
 	tinypngBaseUrl: z.string(),
 	concurrency: z.number(),
+	ignoredFolders: z.string().array(),
 });
 
 export const ObfuscatedPluginSettingsSchema = z.object({
