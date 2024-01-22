@@ -14,26 +14,29 @@ export function getAllImages(plugin: TinypngPlugin) {
 	const files = plugin.app.vault.getFiles();
 
 	// Get all images from the vault
-	return files.filter((file) => {
+	const google = files.filter((file) => {
 		const extension = file.extension;
 		const isExtensionValid =
 			extension === 'png' || extension === 'jpg' || extension === 'jpeg';
 
-		let status: boolean;
+		let status = plugin.settings.ignoredFolders.some((folder) => {
+			return file.path.startsWith(folder);
+		});
+
 		// Check if the plugin in allow-only mode
 		if (plugin.settings.compressAllowedFoldersOnly) {
 			// Only compress images in the allowed folders
-			status = plugin.settings.allowedFolders.some((folder) => {
-				return file.path.startsWith(folder);
-			});
-		} else {
-			status = plugin.settings.ignoredFolders.some((folder) => {
+			status = !plugin.settings.allowedFolders.some((folder) => {
 				return file.path.startsWith(folder);
 			});
 		}
 
 		return isExtensionValid && !status;
 	});
+
+	console.log(google);
+
+	return google;
 }
 
 async function compressSingle(
@@ -41,6 +44,7 @@ async function compressSingle(
 	settings: PluginSettings,
 	image: TFile,
 ) {
+	console.log(settings);
 	try {
 		// Check if the image is already compressed
 		if (await checkImageFromCache(app, settings, image)) {

@@ -75,6 +75,9 @@ export class SettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						plugin.settings.compressAllowedFoldersOnly = value;
 						await plugin.saveSettings();
+						// reload the settings tab
+						await plugin.app.setting.close();
+						await plugin.app.setting.openTabById(manifest.id);
 					});
 			});
 
@@ -109,10 +112,6 @@ export class SettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						plugin.settings.cacheFilePath = value;
 						await plugin.saveSettings();
-						// Provide a notice to the user
-						new Notice(
-							'Cache file path updated. Remember to manually copy the cache file to the new location.',
-						);
 					});
 			});
 

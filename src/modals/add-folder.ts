@@ -33,7 +33,6 @@ export class AddFolderModal extends Modal {
 			return;
 		}
 
-		// Check if path is already in ignored folders
 		const result = this.getObject().includes(this.path);
 
 		if (result) {
