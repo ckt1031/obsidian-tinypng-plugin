@@ -1,4 +1,5 @@
 import { addIcon, Plugin } from 'obsidian';
+import { safeParseAsync } from 'valibot';
 
 import { compressImages, getAllImages } from './compress';
 import { deobfuscateConfig, obfuscateConfig } from './obfuscate-config';
@@ -57,7 +58,7 @@ export default class TinypngPlugin extends Plugin {
 	async loadSettings() {
 		const localData: ObfuscatedPluginSettings = await this.loadData();
 
-		const { success } = await ObfuscatedPluginSettingsSchema.safeParseAsync(localData);
+		const { success } = await safeParseAsync(ObfuscatedPluginSettingsSchema, localData);
 
 		if (!success) {
 			this.settings = DEFAULT_SETTINGS;

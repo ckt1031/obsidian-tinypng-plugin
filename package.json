@@ -1,36 +1,36 @@
 {
-	"name": "obsidian-tinypng-plugin",
-	"version": "0.1.3",
-	"description": "Obsidian plugin for compressing images with TinyPNG",
-	"license": "MIT",
-	"author": "ckt1031",
-	"main": "main.js",
-	"scripts": {
-		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-		"dev": "node esbuild.config.mjs",
-		"format": "prettier --write .",
-		"lint": "tsc -noEmit -skipLibCheck && eslint . --ext .ts,.js,.mjs",
-		"lint:fix": "eslint . --ext .ts,.js,.mjs --fix",
-		"test": "vitest run",
-		"version": "node version-bump.mjs && git add manifest.json versions.json"
-	},
-	"dependencies": {
-		"localforage": "1.10.0",
-		"zod": "3.21.4"
-	},
-	"devDependencies": {
-		"@ckt1031/eslint-config": "1.1.9",
-		"@ckt1031/prettier-config": "1.1.9",
-		"@types/node": "20.3.2",
-		"@typescript-eslint/eslint-plugin": "5.60.1",
-		"builtin-modules": "3.3.0",
-		"esbuild": "0.18.10",
-		"eslint": "8.43.0",
-		"obsidian": "1.2.8",
-		"prettier": "2.8.8",
-		"tslib": "2.6.0",
-		"typescript": "5.1.3",
-		"vitest": "0.32.2"
-	},
-	"prettier": "@ckt1031/prettier-config"
+  "name": "obsidian-tinypng-plugin",
+  "version": "0.1.3",
+  "description": "Obsidian plugin for compressing images with TinyPNG",
+  "license": "MIT",
+  "author": "ckt1031",
+  "main": "main.js",
+  "scripts": {
+    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+    "dev": "node esbuild.config.mjs",
+    "format": "prettier --write .",
+    "lint": "tsc -noEmit -skipLibCheck && eslint . --ext .ts,.js,.mjs",
+    "lint:fix": "eslint . --ext .ts,.js,.mjs --fix",
+    "test": "vitest run",
+    "version": "node version-bump.mjs && git add manifest.json versions.json"
+  },
+  "dependencies": {
+    "localforage": "1.10.0",
+    "valibot": "0.26.0"
+  },
+  "devDependencies": {
+    "@ckt1031/eslint-config": "1.1.9",
+    "@ckt1031/prettier-config": "1.1.9",
+    "@types/node": "20.3.2",
+    "@typescript-eslint/eslint-plugin": "5.60.1",
+    "builtin-modules": "3.3.0",
+    "esbuild": "0.18.10",
+    "eslint": "8.43.0",
+    "obsidian": "1.2.8",
+    "prettier": "2.8.8",
+    "tslib": "2.6.0",
+    "typescript": "5.1.3",
+    "vitest": "0.32.2"
+  },
+  "prettier": "@ckt1031/prettier-config"
 }

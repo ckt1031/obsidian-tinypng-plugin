@@ -1,20 +1,20 @@
-import { z } from 'zod';
+import { array, number, object, type Output, string } from 'valibot';
 
-export const PluginSettingsSchema = z.object({
-	tinypngApiKey: z.string(),
-	tinypngBaseUrl: z.string(),
-	concurrency: z.number(),
-	ignoredFolders: z.string().array(),
+export const PluginSettingsSchema = object({
+	tinypngApiKey: string(),
+	tinypngBaseUrl: string(),
+	concurrency: number(),
+	ignoredFolders: array(string()),
 });
 
-export const ObfuscatedPluginSettingsSchema = z.object({
-	_NOTICE: z.string(),
-	j: z.string(),
+export const ObfuscatedPluginSettingsSchema = object({
+	_NOTICE: string(),
+	j: string(),
 });
 
-export type PluginSettings = z.infer<typeof PluginSettingsSchema>;
+export type PluginSettings = Output<typeof PluginSettingsSchema>;
 
-export type ObfuscatedPluginSettings = z.infer<typeof ObfuscatedPluginSettingsSchema>;
+export type ObfuscatedPluginSettings = Output<typeof ObfuscatedPluginSettingsSchema>;
 
 export enum ImageCacheStatus {
 	Compressed = 1,
