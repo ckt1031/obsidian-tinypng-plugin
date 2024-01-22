@@ -1,7 +1,8 @@
-import { addIcon, Plugin } from 'obsidian';
+import { Plugin, addIcon } from 'obsidian';
 import { safeParseAsync } from 'valibot';
 
 import { compressImages, getAllImages } from './compress';
+import { CACHE_JSON_FILE } from './config';
 import { deobfuscateConfig, obfuscateConfig } from './obfuscate-config';
 import { SettingTab } from './settings-tab';
 import {
@@ -15,6 +16,9 @@ const DEFAULT_SETTINGS: PluginSettings = {
 	tinypngBaseUrl: 'https://api.tinify.com',
 	concurrency: 5,
 	ignoredFolders: [],
+	allowedFolders: [],
+	cacheFilePath: CACHE_JSON_FILE,
+	compressAllowedFoldersOnly: false,
 };
 
 export default class TinypngPlugin extends Plugin {
@@ -34,7 +38,7 @@ export default class TinypngPlugin extends Plugin {
 		// This creates an icon in the left ribbon.
 		this.addRibbonIcon('compress', 'Compress images', async () => {
 			const images = getAllImages(this);
-			await compressImages(this.settings, images);
+			await compressImages(this.app, this.settings, images);
 		});
 
 		// This adds a simple command that can be triggered anywhere
@@ -43,7 +47,7 @@ export default class TinypngPlugin extends Plugin {
 			name: 'Compress images in the current vault',
 			callback: async () => {
 				const images = getAllImages(this);
-				await compressImages(this.settings, images);
+				await compressImages(this.app, this.settings, images);
 			},
 		});
 

@@ -1,28 +1,35 @@
 import type { App, TFile } from 'obsidian';
 
-import { CACHE_JSON_FILE } from './config';
 import store from './store';
-import { ImageCacheStatus, LocalStoreKey } from './types';
+import { ImageCacheStatus, LocalStoreKey, PluginSettings } from './types';
 
-async function createCacheFile(app: App) {
-	const cacheFileExists = await app.vault.adapter.exists(CACHE_JSON_FILE);
+async function getCacheFilePath(app: App, settings: PluginSettings) {
+	// Check if the cache file path is set
+	const cacheFileExists = await app.vault.adapter.exists(
+		settings.cacheFilePath,
+	);
 
 	if (!cacheFileExists) {
-		await app.vault.create(CACHE_JSON_FILE, '{}');
+		await app.vault.create(settings.cacheFilePath, '{}');
 	}
+
+	return settings.cacheFilePath;
 }
 
 function getItemKey(item: TFile) {
 	// NO need to store the path, the name and size is ok to identify the unique file
 	// Example: selfie.jpg (2000 bytes)
 	// Key: selfie.jpg_2000
-	return encodeURIComponent(item.name) + '-' + String(item.stat.size);
+	return `${encodeURIComponent(item.name)}-${String(item.stat.size)}`;
 }
 
-export async function checkImageFromCache(app: App, file: TFile) {
-	await createCacheFile(app);
-
-	const cacheFile = await app.vault.adapter.read(CACHE_JSON_FILE);
+export async function checkImageFromCache(
+	app: App,
+	settings: PluginSettings,
+	file: TFile,
+) {
+	const cacheFilePath = await getCacheFilePath(app, settings);
+	const cacheFile = await app.vault.adapter.read(cacheFilePath);
 
 	const cache: Record<string, ImageCacheStatus | undefined> =
 		JSON.parse(cacheFile);
@@ -30,16 +37,19 @@ export async function checkImageFromCache(app: App, file: TFile) {
 	return cache[getItemKey(file)] === ImageCacheStatus.Compressed;
 }
 
-export async function addImageToCache(file: TFile) {
-	await createCacheFile(app);
-
-	const cacheFile = await app.vault.adapter.read(CACHE_JSON_FILE);
+export async function addImageToCache(
+	app: App,
+	settings: PluginSettings,
+	file: TFile,
+) {
+	const cacheFilePath = await getCacheFilePath(app, settings);
+	const cacheFile = await app.vault.adapter.read(cacheFilePath);
 
 	const cache = JSON.parse(cacheFile);
 
 	cache[getItemKey(file)] = ImageCacheStatus.Compressed;
 
-	await app.vault.adapter.write(CACHE_JSON_FILE, JSON.stringify(cache));
+	await app.vault.adapter.write(cacheFilePath, JSON.stringify(cache));
 
 	const imageCount: string | null = await store.getItem(
 		LocalStoreKey.ImagesNumberAwaitingCompression,
@@ -57,6 +67,7 @@ export async function addImageToCache(file: TFile) {
 	}
 }
 
-export async function clearCache() {
-	await app.vault.adapter.write(CACHE_JSON_FILE, '{}');
+export async function clearCache(app: App, settings: PluginSettings) {
+	const cacheFilePath = await getCacheFilePath(app, settings);
+	await app.vault.adapter.write(cacheFilePath, '{}');
 }

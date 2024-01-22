@@ -8,6 +8,9 @@ const DEFAULT_SETTINGS: PluginSettings = {
 	tinypngBaseUrl: 'https://api.example.com',
 	concurrency: 20,
 	ignoredFolders: ['node_modules', '.git'],
+	allowedFolders: ['assets'],
+	cacheFilePath: '.ok/cache.json',
+	compressAllowedFoldersOnly: false,
 };
 
 describe('obfuscateConfig and deobfuscateConfig', () => {

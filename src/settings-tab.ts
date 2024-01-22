@@ -18,9 +18,10 @@ export class SettingTab extends PluginSettingTab {
 	}
 
 	private static createFragmentWithHTML = (html: string) =>
-		createFragment(
-			(documentFragment) => (documentFragment.createDiv().innerHTML = html),
-		);
+		createFragment((documentFragment) => {
+			const div = documentFragment.createDiv();
+			div.innerHTML = html;
+		});
 
 	display(): void {
 		const { containerEl, plugin, app } = this;
@@ -95,6 +96,27 @@ export class SettingTab extends PluginSettingTab {
 			});
 
 		new Setting(containerEl)
+			.setName('Cache File Path')
+			.setDesc(
+				SettingTab.createFragmentWithHTML(
+					'<b>DANGER:</b> This setting is for advanced users. Changing the cache file path can lead to data inconsistencies and redundant API calls. If you change this path, make sure to manually copy the cache file to the new location.',
+				),
+			)
+			.addText((text) => {
+				text
+					.setPlaceholder('Enter the path for the cache file')
+					.setValue(plugin.settings.cacheFilePath)
+					.onChange(async (value) => {
+						plugin.settings.cacheFilePath = value;
+						await plugin.saveSettings();
+						// Provide a notice to the user
+						new Notice(
+							'Cache file path updated. Remember to manually copy the cache file to the new location.',
+						);
+					});
+			});
+
+		new Setting(containerEl)
 			.setName('Reset Local Store')
 			.setDesc(
 				SettingTab.createFragmentWithHTML(
@@ -122,7 +144,7 @@ export class SettingTab extends PluginSettingTab {
 					new ConfirmModal(app, async () => {
 						const allImages = getAllImages(plugin);
 						for (const image of allImages) {
-							await addImageToCache(image);
+							await addImageToCache(app, plugin.settings, image);
 						}
 						new Notice('All images have been added to the cache');
 					}).open();
@@ -139,7 +161,7 @@ export class SettingTab extends PluginSettingTab {
 			.addButton((button) => {
 				button.setButtonText('Reset').onClick(() => {
 					new ConfirmModal(app, async () => {
-						await clearCache();
+						await clearCache(app, plugin.settings);
 						new Notice('All images have been removed from the cache');
 					}).open();
 				});
@@ -153,7 +175,7 @@ export class SettingTab extends PluginSettingTab {
 				.setDesc('Add a folder to the allowed folders list')
 				.addButton((button) => {
 					button.setButtonText('Add').onClick(async () => {
-						await (plugin as any).app.setting.close();
+						await plugin.app.setting.close();
 						new AddFolderModal(plugin, AddFolderMode.Allowed).open();
 					});
 				});
@@ -188,7 +210,7 @@ export class SettingTab extends PluginSettingTab {
 			.setDesc('Add a folder to the ignored folders list')
 			.addButton((button) => {
 				button.setButtonText('Add').onClick(async () => {
-					await (plugin as any).app.setting.close();
+					await plugin.app.setting.close();
 					new AddFolderModal(plugin, AddFolderMode.Ignored).open();
 				});
 			});

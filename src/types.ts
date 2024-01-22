@@ -1,10 +1,11 @@
-import { array, number, object, type Output, string, boolean } from 'valibot';
+import { type Output, array, boolean, number, object, string } from 'valibot';
 
 export const PluginSettingsSchema = object({
 	tinypngApiKey: string(),
 	tinypngBaseUrl: string(),
 	concurrency: number(),
 	compressAllowedFoldersOnly: boolean(),
+	cacheFilePath: string(),
 	allowedFolders: array(string()),
 	ignoredFolders: array(string()),
 });

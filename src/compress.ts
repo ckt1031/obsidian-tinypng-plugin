@@ -1,4 +1,4 @@
-import { Notice, request, requestUrl, type TFile } from 'obsidian';
+import { App, Notice, type TFile, request, requestUrl } from 'obsidian';
 
 import { addImageToCache, checkImageFromCache } from './cache';
 import type TinypngPlugin from './main';
@@ -36,10 +36,14 @@ export function getAllImages(plugin: TinypngPlugin) {
 	});
 }
 
-async function compressSingle(settings: PluginSettings, image: TFile) {
+async function compressSingle(
+	app: App,
+	settings: PluginSettings,
+	image: TFile,
+) {
 	try {
 		// Check if the image is already compressed
-		if (await checkImageFromCache(app, image)) {
+		if (await checkImageFromCache(app, settings, image)) {
 			return ImageCompressionProgressStatus.AlreadyCompressed;
 		}
 
@@ -68,7 +72,7 @@ async function compressSingle(settings: PluginSettings, image: TFile) {
 		await app.vault.modifyBinary(image, compressedImage.arrayBuffer);
 
 		// Add the image to the cache
-		await addImageToCache(image);
+		await addImageToCache(app, settings, image);
 
 		return ImageCompressionProgressStatus.Compressed;
 	} catch (error) {
@@ -80,6 +84,7 @@ async function compressSingle(settings: PluginSettings, image: TFile) {
 }
 
 export async function compressImages(
+	app: App,
 	settings: PluginSettings,
 	images: TFile[],
 ): Promise<void> {
@@ -133,7 +138,7 @@ export async function compressImages(
 
 	for (const image of images) {
 		promises.push(
-			compressSingle(settings, image)
+			compressSingle(app, settings, image)
 				.then((status) => {
 					switch (status) {
 						case ImageCompressionProgressStatus.Compressed: {
