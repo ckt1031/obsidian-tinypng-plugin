@@ -24,7 +24,8 @@ export async function checkImageFromCache(app: App, file: TFile) {
 
 	const cacheFile = await app.vault.adapter.read(CACHE_JSON_FILE);
 
-	const cache: Record<string, ImageCacheStatus | undefined> = JSON.parse(cacheFile);
+	const cache: Record<string, ImageCacheStatus | undefined> =
+		JSON.parse(cacheFile);
 
 	return cache[getItemKey(file)] === ImageCacheStatus.Compressed;
 }
@@ -48,7 +49,10 @@ export async function addImageToCache(file: TFile) {
 		const newImageCount = Number(imageCount) - 1;
 
 		await (newImageCount > 0
-			? store.setItem(LocalStoreKey.ImagesNumberAwaitingCompression, newImageCount)
+			? store.setItem(
+					LocalStoreKey.ImagesNumberAwaitingCompression,
+					newImageCount,
+			  )
 			: store.removeItem(LocalStoreKey.ImagesNumberAwaitingCompression));
 	}
 }

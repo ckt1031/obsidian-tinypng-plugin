@@ -58,7 +58,10 @@ export default class TinypngPlugin extends Plugin {
 	async loadSettings() {
 		const localData: ObfuscatedPluginSettings = await this.loadData();
 
-		const { success } = await safeParseAsync(ObfuscatedPluginSettingsSchema, localData);
+		const { success } = await safeParseAsync(
+			ObfuscatedPluginSettingsSchema,
+			localData,
+		);
 
 		if (!success) {
 			this.settings = DEFAULT_SETTINGS;
@@ -66,7 +69,11 @@ export default class TinypngPlugin extends Plugin {
 			return;
 		}
 
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, deobfuscateConfig(localData));
+		this.settings = Object.assign(
+			{},
+			DEFAULT_SETTINGS,
+			deobfuscateConfig(localData),
+		);
 	}
 
 	async saveSettings() {

@@ -4,21 +4,35 @@ import { addImageToCache, checkImageFromCache } from './cache';
 import type TinypngPlugin from './main';
 import store from './store';
 import type { PluginSettings } from './types';
-import { CompressionStatus, ImageCompressionProgressStatus, LocalStoreKey } from './types';
+import {
+	CompressionStatus,
+	ImageCompressionProgressStatus,
+	LocalStoreKey,
+} from './types';
 
 export function getAllImages(plugin: TinypngPlugin) {
 	const files = plugin.app.vault.getFiles();
 
 	// Get all images from the vault
-	return files.filter(file => {
+	return files.filter((file) => {
 		const extension = file.extension;
-		const isExtensionValid = extension === 'png' || extension === 'jpg' || extension === 'jpeg';
+		const isExtensionValid =
+			extension === 'png' || extension === 'jpg' || extension === 'jpeg';
 
-		const isIgnored = plugin.settings.ignoredFolders.some(folder => {
-			return file.path.startsWith(folder);
-		});
+		let status: boolean;
+		// Check if the plugin in allow-only mode
+		if (plugin.settings.compressAllowedFoldersOnly) {
+			// Only compress images in the allowed folders
+			status = plugin.settings.allowedFolders.some((folder) => {
+				return file.path.startsWith(folder);
+			});
+		} else {
+			status = plugin.settings.ignoredFolders.some((folder) => {
+				return file.path.startsWith(folder);
+			});
+		}
 
-		return isExtensionValid && !isIgnored;
+		return isExtensionValid && !status;
 	});
 }
 
@@ -65,7 +79,10 @@ async function compressSingle(settings: PluginSettings, image: TFile) {
 	}
 }
 
-export async function compressImages(settings: PluginSettings, images: TFile[]): Promise<void> {
+export async function compressImages(
+	settings: PluginSettings,
+	images: TFile[],
+): Promise<void> {
 	// Get the API key from the settings
 	const apiKey: string | undefined = settings.tinypngApiKey;
 
@@ -93,10 +110,16 @@ export async function compressImages(settings: PluginSettings, images: TFile[]):
 	}
 
 	// Set CompressionStatus to Compressing
-	await store.setItem(LocalStoreKey.CompressionStatus, CompressionStatus.Compressing);
+	await store.setItem(
+		LocalStoreKey.CompressionStatus,
+		CompressionStatus.Compressing,
+	);
 
 	// Set the images to be compressed
-	await store.setItem(LocalStoreKey.ImagesNumberAwaitingCompression, images.length);
+	await store.setItem(
+		LocalStoreKey.ImagesNumberAwaitingCompression,
+		images.length,
+	);
 
 	// Get the concurrency from the settings
 	const concurrency: number | undefined = settings.concurrency;
@@ -111,7 +134,7 @@ export async function compressImages(settings: PluginSettings, images: TFile[]):
 	for (const image of images) {
 		promises.push(
 			compressSingle(settings, image)
-				.then(status => {
+				.then((status) => {
 					switch (status) {
 						case ImageCompressionProgressStatus.Compressed: {
 							successCount++;
@@ -131,7 +154,7 @@ export async function compressImages(settings: PluginSettings, images: TFile[]):
 						// No default
 					}
 				})
-				.catch(error => {
+				.catch((error) => {
 					console.error(error);
 					failedCount++;
 				}),

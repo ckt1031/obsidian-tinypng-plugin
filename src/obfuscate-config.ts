@@ -9,7 +9,9 @@ export const xorCipher = (s: string, key: string) => {
 	return (
 		[...s]
 			// eslint-disable-next-line unicorn/prefer-code-point
-			.map((c, i) => String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length)))
+			.map((c, i) =>
+				String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length)),
+			)
 			.join('')
 	);
 };

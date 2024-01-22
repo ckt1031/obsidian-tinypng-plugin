@@ -3,15 +3,28 @@ import { Modal, Notice, Setting } from 'obsidian';
 import manifest from '../../manifest.json';
 import type AiPlugin from '../main';
 
-export default class AddIgnoredFolderModal extends Modal {
+export enum AddFolderMode {
+	Allowed = 'allowed',
+	Ignored = 'ignored',
+}
+
+export class AddFolderModal extends Modal {
 	path: string;
+	mode: AddFolderMode;
 	plugin: AiPlugin;
 
 	// Action sync function or async function
-	constructor(plugin: AiPlugin) {
+	constructor(plugin: AiPlugin, mode: AddFolderMode) {
 		super(plugin.app);
 		this.path = '';
 		this.plugin = plugin;
+		this.mode = mode;
+	}
+
+	getObject() {
+		return this.mode === AddFolderMode.Allowed
+			? this.plugin.settings.allowedFolders
+			: this.plugin.settings.ignoredFolders;
 	}
 
 	async submitForm(): Promise<void> {
@@ -21,10 +34,10 @@ export default class AddIgnoredFolderModal extends Modal {
 		}
 
 		// Check if path is already in ignored folders
-		const result = this.plugin.settings.ignoredFolders.includes(this.path);
+		const result = this.getObject().includes(this.path);
 
 		if (result) {
-			new Notice('Path already exists in ignored folders');
+			new Notice(`Path already exists in ${this.mode} folders`);
 			return;
 		}
 
@@ -36,11 +49,11 @@ export default class AddIgnoredFolderModal extends Modal {
 			return;
 		}
 
-		this.plugin.settings.ignoredFolders.push(this.path);
+		this.getObject().push(this.path);
 
 		await this.plugin.saveSettings();
 
-		new Notice(`Added ${this.path} to ignored folders`);
+		new Notice(`Added ${this.path} to ${this.mode} folders`);
 
 		this.close();
 	}
@@ -48,16 +61,16 @@ export default class AddIgnoredFolderModal extends Modal {
 	onOpen() {
 		const { contentEl, path } = this;
 
-		contentEl.createEl('h4', { text: 'Add Ignored Folder' });
+		contentEl.createEl('h4', { text: `Add ${this.mode} Folder` });
 
-		new Setting(contentEl).setName('Path:').addText(search => {
-			search.onChange(value => {
+		new Setting(contentEl).setName('Path:').addText((search) => {
+			search.onChange((value) => {
 				this.path = value;
 			});
 			search.setValue(path);
 		});
 
-		new Setting(contentEl).addButton(btn =>
+		new Setting(contentEl).addButton((btn) =>
 			btn
 				.setButtonText('Confirm')
 				.setCta()

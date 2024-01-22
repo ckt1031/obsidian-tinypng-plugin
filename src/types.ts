@@ -1,9 +1,11 @@
-import { array, number, object, type Output, string } from 'valibot';
+import { array, number, object, type Output, string, boolean } from 'valibot';
 
 export const PluginSettingsSchema = object({
 	tinypngApiKey: string(),
 	tinypngBaseUrl: string(),
 	concurrency: number(),
+	compressAllowedFoldersOnly: boolean(),
+	allowedFolders: array(string()),
 	ignoredFolders: array(string()),
 });
 
@@ -14,7 +16,9 @@ export const ObfuscatedPluginSettingsSchema = object({
 
 export type PluginSettings = Output<typeof PluginSettingsSchema>;
 
-export type ObfuscatedPluginSettings = Output<typeof ObfuscatedPluginSettingsSchema>;
+export type ObfuscatedPluginSettings = Output<
+	typeof ObfuscatedPluginSettingsSchema
+>;
 
 export enum ImageCacheStatus {
 	Compressed = 1,

@@ -21,10 +21,12 @@ export default class ConfirmModal extends Modal {
 
 		contentEl.createEl('h4', { text: 'Are you sure you want to proceed?' });
 
-		contentEl.createEl('p', { text: 'This action cannot be undone, please confirm to proceed.' });
+		contentEl.createEl('p', {
+			text: 'This action cannot be undone, please confirm to proceed.',
+		});
 
 		new Setting(contentEl)
-			.addButton(btn =>
+			.addButton((btn) =>
 				btn
 					.setButtonText('Confirm')
 					.setCta()
@@ -33,7 +35,7 @@ export default class ConfirmModal extends Modal {
 						await this.onConfirm();
 					}),
 			)
-			.addButton(btn =>
+			.addButton((btn) =>
 				btn
 					.setButtonText('Cancel')
 					.setCta()
