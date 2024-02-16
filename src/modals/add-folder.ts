@@ -1,6 +1,6 @@
 import { Modal, Notice, Setting } from 'obsidian';
 
-import type AiPlugin from '../main';
+import type TinyPngPlugin from '../main';
 
 export enum AddFolderMode {
 	Allowed = 'allowed',
@@ -10,10 +10,10 @@ export enum AddFolderMode {
 export class AddFolderModal extends Modal {
 	path: string;
 	mode: AddFolderMode;
-	plugin: AiPlugin;
+	plugin: TinyPngPlugin;
 
 	// Action sync function or async function
-	constructor(plugin: AiPlugin, mode: AddFolderMode) {
+	constructor(plugin: TinyPngPlugin, mode: AddFolderMode) {
 		super(plugin.app);
 		this.path = '';
 		this.plugin = plugin;
