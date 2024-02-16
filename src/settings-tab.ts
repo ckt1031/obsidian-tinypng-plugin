@@ -1,7 +1,6 @@
 import type { App } from 'obsidian';
 import { Notice, PluginSettingTab, Setting } from 'obsidian';
 
-import manifest from '../manifest.json';
 import { addImageToCache, clearCache } from './cache';
 import { getAllImages } from './compress';
 import type TinypngPlugin from './main';
@@ -27,8 +26,6 @@ export class SettingTab extends PluginSettingTab {
 		const { containerEl, plugin, app } = this;
 
 		containerEl.empty();
-
-		containerEl.createEl('h1', { text: manifest.name });
 
 		new Setting(containerEl)
 			.setName('API Key')
@@ -77,7 +74,7 @@ export class SettingTab extends PluginSettingTab {
 						await plugin.saveSettings();
 						// reload the settings tab
 						await plugin.app.setting.close();
-						await plugin.app.setting.openTabById(manifest.id);
+						await plugin.app.setting.openTabById(plugin.manifest.id);
 					});
 			});
 

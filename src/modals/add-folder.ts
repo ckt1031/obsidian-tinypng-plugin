@@ -1,6 +1,5 @@
 import { Modal, Notice, Setting } from 'obsidian';
 
-import manifest from '../../manifest.json';
 import type AiPlugin from '../main';
 
 export enum AddFolderMode {
@@ -83,6 +82,6 @@ export class AddFolderModal extends Modal {
 		const { contentEl, plugin } = this;
 		contentEl.empty();
 		await plugin.app.setting.open();
-		await plugin.app.setting.openTabById(manifest.id);
+		await plugin.app.setting.openTabById(plugin.manifest.id);
 	}
 }
