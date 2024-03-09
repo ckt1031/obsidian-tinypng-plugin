@@ -1,7 +1,7 @@
 import type { App, TFile } from 'obsidian';
 
 import store from './store';
-import { ImageCacheStatus, LocalStoreKey, PluginSettings } from './types';
+import { ImageCacheStatus, LocalStoreKey, type PluginSettings } from './types';
 
 async function getCacheFilePath(app: App, settings: PluginSettings) {
 	// Check if the cache file path is set

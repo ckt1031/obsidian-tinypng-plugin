@@ -1,4 +1,4 @@
-import { App, Notice, type TFile, request, requestUrl } from 'obsidian';
+import { type App, Notice, type TFile, request, requestUrl } from 'obsidian';
 
 import { addImageToCache, checkImageFromCache } from './cache';
 import type TinypngPlugin from './main';
