@@ -20,7 +20,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.6.0",
-		"@types/node": "20.11.25",
+		"@types/node": "20.11.26",
 		"builtin-modules": "3.3.0",
 		"esbuild": "0.20.1",
 		"obsidian": "1.5.7",
