@@ -19,7 +19,7 @@
 		"valibot": "0.30.0"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "1.6.0",
+		"@biomejs/biome": "1.6.1",
 		"@types/node": "20.11.26",
 		"builtin-modules": "3.3.0",
 		"esbuild": "0.20.1",
