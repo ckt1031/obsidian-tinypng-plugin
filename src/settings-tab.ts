@@ -100,6 +100,24 @@ export class SettingTab extends PluginSettingTab {
 			});
 
 		new Setting(containerEl)
+			.setName('Extra Image Formats')
+			.setDesc(
+				'Enter the extra image formats to compress, separated by commas, do not include dot or space',
+			)
+			.addTextArea((text) => {
+				text
+					.setPlaceholder('png,jpg,webp')
+					.setValue(plugin.settings.extraImageFormats)
+					.onChange(async (value) => {
+						// Check only if the it has ONLY letter and commas
+						if (/^[a-zA-Z,]+$/.test(value)) {
+							plugin.settings.extraImageFormats = value;
+							await plugin.saveSettings();
+						}
+					});
+			});
+
+		new Setting(containerEl)
 			.setName('Cache File Path')
 			.setDesc(
 				this.createFragmentWithHTML(

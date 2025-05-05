@@ -8,6 +8,7 @@ export const PluginSettingsSchema = v.object({
 	cacheFilePath: v.string(),
 	allowedFolders: v.array(v.string()),
 	ignoredFolders: v.array(v.string()),
+	extraImageFormats: v.string(),
 });
 
 export const ObfuscatedPluginSettingsSchema = v.object({

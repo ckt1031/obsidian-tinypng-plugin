@@ -21,6 +21,7 @@ const DEFAULT_SETTINGS: PluginSettings = {
 	allowedFolders: [],
 	cacheFilePath: CACHE_JSON_FILE,
 	compressAllowedFoldersOnly: false,
+	extraImageFormats: 'png,webp',
 };
 
 export default class TinypngPlugin extends Plugin {

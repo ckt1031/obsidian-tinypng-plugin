@@ -11,6 +11,7 @@ const DEFAULT_SETTINGS: PluginSettings = {
 	allowedFolders: ['assets'],
 	cacheFilePath: '.ok/cache.json',
 	compressAllowedFoldersOnly: false,
+	extraImageFormats: 'png,jpg,webp',
 };
 
 describe('obfuscateConfig and deobfuscateConfig', () => {
