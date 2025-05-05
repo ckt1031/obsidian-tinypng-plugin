@@ -1,4 +1,3 @@
-import type { App } from 'obsidian';
 import { Notice, PluginSettingTab, Setting } from 'obsidian';
 
 import { addImageToCache, clearCache } from './cache';
@@ -16,11 +15,17 @@ export class SettingTab extends PluginSettingTab {
 		this.plugin = plugin;
 	}
 
-	private static createFragmentWithHTML = (html: string) =>
+	private createFragmentWithHTML = (html: string) =>
 		createFragment((documentFragment) => {
 			const div = documentFragment.createDiv();
 			div.innerHTML = html;
 		});
+
+	async restartSettingsTab() {
+		await this.plugin.app.setting.close();
+		await this.plugin.app.setting.open();
+		await this.plugin.app.setting.openTabById(this.plugin.manifest.id);
+	}
 
 	display(): void {
 		const { containerEl, plugin, app } = this;
@@ -30,7 +35,7 @@ export class SettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName('API Key')
 			.setDesc(
-				SettingTab.createFragmentWithHTML(
+				this.createFragmentWithHTML(
 					'API Key for the tinypng service, you can get one <a href="https://tinify.com/dashboard/api" target="_blank">here</a>',
 				),
 			)
@@ -47,7 +52,7 @@ export class SettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName('TinyPNG Base URL')
 			.setDesc(
-				SettingTab.createFragmentWithHTML(
+				this.createFragmentWithHTML(
 					'Base URL for the tinypng service, defaults to <code>https://api.tinify.com</code>',
 				),
 			)
@@ -73,8 +78,7 @@ export class SettingTab extends PluginSettingTab {
 						plugin.settings.compressAllowedFoldersOnly = value;
 						await plugin.saveSettings();
 						// reload the settings tab
-						await plugin.app.setting.close();
-						await plugin.app.setting.openTabById(plugin.manifest.id);
+						await this.restartSettingsTab();
 					});
 			});
 
@@ -98,7 +102,7 @@ export class SettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName('Cache File Path')
 			.setDesc(
-				SettingTab.createFragmentWithHTML(
+				this.createFragmentWithHTML(
 					'<b>DANGER:</b> This setting is for advanced users. Changing the cache file path can lead to data inconsistencies and redundant API calls. If you change this path, make sure to manually copy the cache file to the new location.',
 				),
 			)
@@ -115,7 +119,7 @@ export class SettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName('Reset Local Store')
 			.setDesc(
-				SettingTab.createFragmentWithHTML(
+				this.createFragmentWithHTML(
 					'<b>This is a debug option!</b> This will reset the local store, which can fix some temporary issues.',
 				),
 			)
@@ -131,7 +135,7 @@ export class SettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName('Save all image to cache without compression')
 			.setDesc(
-				SettingTab.createFragmentWithHTML(
+				this.createFragmentWithHTML(
 					'<b>This is a debug option!</b> If you are certain that all images are compressed and you have lost the cache file, you can use this option to temporarily recover the cache file.',
 				),
 			)
@@ -150,7 +154,7 @@ export class SettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName('Clear all images records from cache')
 			.setDesc(
-				SettingTab.createFragmentWithHTML(
+				this.createFragmentWithHTML(
 					'<b>This is a debug and VERY DANGEROUS option!</b> You will lose all the records of the images that have been compressed. This will not delete the images themselves, but you will be compressing them again.',
 				),
 			)
@@ -197,40 +201,40 @@ export class SettingTab extends PluginSettingTab {
 					});
 				});
 			}
-		}
+		} else {
+			containerEl.createEl('h2', { text: 'Ignored Folders' });
 
-		containerEl.createEl('h2', { text: 'Ignored Folders' });
-
-		new Setting(containerEl)
-			.setName('Add')
-			.setDesc('Add a folder to the ignored folders list')
-			.addButton((button) => {
-				button.setButtonText('Add').onClick(async () => {
-					await plugin.app.setting.close();
-					new AddFolderModal(plugin, AddFolderMode.Ignored).open();
+			new Setting(containerEl)
+				.setName('Add')
+				.setDesc('Add a folder to the ignored folders list')
+				.addButton((button) => {
+					button.setButtonText('Add').onClick(async () => {
+						await plugin.app.setting.close();
+						new AddFolderModal(plugin, AddFolderMode.Ignored).open();
+					});
 				});
-			});
 
-		for (const path of plugin.settings.ignoredFolders) {
-			new Setting(containerEl).setName(path).addButton((btn) => {
-				btn.setIcon('cross');
-				btn.setTooltip('Delete this folder from the ignored folders list');
-				btn.onClick(async () => {
-					if (btn.buttonEl.textContent === '') {
-						btn.setButtonText('Click once more to confirm removal');
-						setTimeout(() => {
-							btn.setIcon('cross');
-						}, 5000);
-					} else {
-						if (btn.buttonEl.parentElement?.parentElement) {
-							btn.buttonEl.parentElement.parentElement.remove();
+			for (const path of plugin.settings.ignoredFolders) {
+				new Setting(containerEl).setName(path).addButton((btn) => {
+					btn.setIcon('cross');
+					btn.setTooltip('Delete this folder from the ignored folders list');
+					btn.onClick(async () => {
+						if (btn.buttonEl.textContent === '') {
+							btn.setButtonText('Click once more to confirm removal');
+							setTimeout(() => {
+								btn.setIcon('cross');
+							}, 5000);
+						} else {
+							if (btn.buttonEl.parentElement?.parentElement) {
+								btn.buttonEl.parentElement.parentElement.remove();
+							}
+							plugin.settings.ignoredFolders =
+								plugin.settings.ignoredFolders.filter((p) => p !== path);
+							await plugin.saveSettings();
 						}
-						plugin.settings.ignoredFolders =
-							plugin.settings.ignoredFolders.filter((p) => p !== path);
-						await plugin.saveSettings();
-					}
+					});
 				});
-			});
+			}
 		}
 	}
 }
