@@ -40,10 +40,20 @@ export class AddFolderModal extends Modal {
 		}
 
 		// Check if path is valid
-		const pathExists = await this.plugin.app.vault.adapter.exists(this.path);
+		const pathExists = await this.plugin.app.vault.adapter.exists(
+			this.path,
+			true,
+		);
 
 		if (!pathExists) {
 			new Notice('Path does not exist');
+			return;
+		}
+
+		const folderInfo = this.plugin.app.vault.getFolderByPath(this.path);
+
+		if (!folderInfo) {
+			new Notice('Path is not a valid folder');
 			return;
 		}
 
