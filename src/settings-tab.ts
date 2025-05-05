@@ -11,8 +11,8 @@ import store from './store';
 export class SettingTab extends PluginSettingTab {
 	plugin: TinypngPlugin;
 
-	constructor(app: App, plugin: TinypngPlugin) {
-		super(app, plugin);
+	constructor(plugin: TinypngPlugin) {
+		super(plugin.app, plugin);
 		this.plugin = plugin;
 	}
 

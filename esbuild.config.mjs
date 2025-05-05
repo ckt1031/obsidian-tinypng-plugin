@@ -17,6 +17,9 @@ const context = await esbuild.context({
 	treeShaking: true,
 	legalComments: 'none',
 	outfile: 'main.js',
+	loader: {
+		'.svg': 'text',
+	},
 });
 
 if (prod) {

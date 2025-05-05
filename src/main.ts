@@ -3,6 +3,7 @@ import { safeParseAsync } from 'valibot';
 
 import { compressImages, getAllImages } from './compress';
 import { CACHE_JSON_FILE } from './config';
+import compressSVGImage from './icons/compress.svg';
 import { deobfuscateConfig, obfuscateConfig } from './obfuscate-config';
 import { SettingTab } from './settings-tab';
 import {
@@ -27,13 +28,7 @@ export default class TinypngPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		addIcon(
-			'compress',
-			`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-			<path d="M12 5v14M19 12l-7 7-7-7"/>
-		</svg>
-'`,
-		);
+		addIcon('compress', compressSVGImage);
 
 		// This creates an icon in the left ribbon.
 		this.addRibbonIcon('compress', 'Compress images', async () => {
@@ -52,7 +47,7 @@ export default class TinypngPlugin extends Plugin {
 		});
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SettingTab(this.app, this));
+		this.addSettingTab(new SettingTab(this));
 	}
 
 	onunload() {
