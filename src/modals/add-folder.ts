@@ -69,7 +69,7 @@ export class AddFolderModal extends Modal {
 	onOpen() {
 		const { contentEl, path } = this;
 
-		contentEl.createEl('h4', { text: `Add ${this.mode} Folder` });
+		this.setTitle(`Add ${this.mode} Folder`);
 
 		new Setting(contentEl).setName('Path:').addText((search) => {
 			search.onChange((value) => {

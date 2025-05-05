@@ -19,7 +19,7 @@ export default class ConfirmModal extends Modal {
 	onOpen() {
 		const { contentEl, onCancel } = this;
 
-		contentEl.createEl('h4', { text: 'Are you sure you want to proceed?' });
+		this.setTitle('Are you sure you want to proceed?');
 
 		contentEl.createEl('p', {
 			text: 'This action cannot be undone, please confirm to proceed.',
