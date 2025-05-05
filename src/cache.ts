@@ -62,7 +62,7 @@ export async function addImageToCache(
 			? store.setItem(
 					LocalStoreKey.ImagesNumberAwaitingCompression,
 					newImageCount,
-			  )
+				)
 			: store.removeItem(LocalStoreKey.ImagesNumberAwaitingCompression));
 	}
 }

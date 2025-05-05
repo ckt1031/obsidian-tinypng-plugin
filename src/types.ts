@@ -1,23 +1,23 @@
-import { type Output, array, boolean, number, object, string } from 'valibot';
+import * as v from 'valibot';
 
-export const PluginSettingsSchema = object({
-	tinypngApiKey: string(),
-	tinypngBaseUrl: string(),
-	concurrency: number(),
-	compressAllowedFoldersOnly: boolean(),
-	cacheFilePath: string(),
-	allowedFolders: array(string()),
-	ignoredFolders: array(string()),
+export const PluginSettingsSchema = v.object({
+	tinypngApiKey: v.string(),
+	tinypngBaseUrl: v.string(),
+	concurrency: v.number(),
+	compressAllowedFoldersOnly: v.boolean(),
+	cacheFilePath: v.string(),
+	allowedFolders: v.array(v.string()),
+	ignoredFolders: v.array(v.string()),
 });
 
-export const ObfuscatedPluginSettingsSchema = object({
-	_NOTICE: string(),
-	j: string(),
+export const ObfuscatedPluginSettingsSchema = v.object({
+	_NOTICE: v.string(),
+	j: v.string(),
 });
 
-export type PluginSettings = Output<typeof PluginSettingsSchema>;
+export type PluginSettings = v.InferInput<typeof PluginSettingsSchema>;
 
-export type ObfuscatedPluginSettings = Output<
+export type ObfuscatedPluginSettings = v.InferInput<
 	typeof ObfuscatedPluginSettingsSchema
 >;
 
