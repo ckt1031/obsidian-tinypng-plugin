@@ -14,7 +14,7 @@
 		"noImplicitAny": true,
 		"resolveJsonModule": true,
 		"strictNullChecks": true,
-		"target": "ES6"
+		"target": "ES2024"
 	},
 	"include": ["**/*.ts", "*.mjs"]
 }
