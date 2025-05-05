@@ -41,20 +41,16 @@ export function getAllImages(plugin: TinypngPlugin) {
 	});
 }
 
-async function compressSingle(
-	app: App,
-	settings: PluginSettings,
-	image: TFile,
-) {
+async function compressSingle(plugin: TinypngPlugin, image: TFile) {
 	try {
 		// Check if the image is already compressed
-		if (await checkImageFromCache(app, settings, image)) {
+		if (await checkImageFromCache(plugin, image)) {
 			return ImageCompressionProgressStatus.AlreadyCompressed;
 		}
 
-		const apiURL = `${settings.tinypngBaseUrl}/shrink`;
+		const apiURL = `${plugin.settings.tinypngBaseUrl}/shrink`;
 
-		const key = btoa(`api:${settings.tinypngApiKey}`);
+		const key = btoa(`api:${plugin.settings.tinypngApiKey}`);
 
 		const data = await request({
 			url: apiURL,
@@ -62,7 +58,7 @@ async function compressSingle(
 			headers: {
 				Authorization: `Basic ${key}`,
 			},
-			body: await app.vault.readBinary(image),
+			body: await plugin.app.vault.readBinary(image),
 		});
 
 		// Get the compressed image url from Location header and replace the original
@@ -74,10 +70,11 @@ async function compressSingle(
 
 		const compressedImage = await requestUrl(compressedImageURL);
 
-		await app.vault.modifyBinary(image, compressedImage.arrayBuffer);
+		// Re-write the image file
+		await plugin.app.vault.modifyBinary(image, compressedImage.arrayBuffer);
 
 		// Add the image to the cache
-		await addImageToCache(app, settings, image);
+		await addImageToCache(plugin, image);
 
 		return ImageCompressionProgressStatus.Compressed;
 	} catch (error) {
@@ -89,12 +86,11 @@ async function compressSingle(
 }
 
 export async function compressImages(
-	app: App,
-	settings: PluginSettings,
+	plugin: TinypngPlugin,
 	images: TFile[],
 ): Promise<void> {
 	// Get the API key from the settings
-	const apiKey: string | undefined = settings.tinypngApiKey;
+	const apiKey: string | undefined = plugin.settings.tinypngApiKey;
 
 	if (!apiKey) {
 		new Notice('Please enter an API key in the settings.');
@@ -132,7 +128,7 @@ export async function compressImages(
 	);
 
 	// Get the concurrency from the settings
-	const concurrency: number | undefined = settings.concurrency;
+	const concurrency: number | undefined = plugin.settings.concurrency;
 
 	let successCount = 0;
 	let bypassedCount = 0;
@@ -143,7 +139,7 @@ export async function compressImages(
 
 	for (const image of images) {
 		promises.push(
-			compressSingle(app, settings, image)
+			compressSingle(plugin, image)
 				.then((status) => {
 					switch (status) {
 						case ImageCompressionProgressStatus.Compressed: {

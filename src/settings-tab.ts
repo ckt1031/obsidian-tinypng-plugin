@@ -162,7 +162,7 @@ export class SettingTab extends PluginSettingTab {
 					new ConfirmModal(app, async () => {
 						const allImages = getAllImages(plugin);
 						for (const image of allImages) {
-							await addImageToCache(app, plugin.settings, image);
+							await addImageToCache(plugin, image);
 						}
 						new Notice('All images have been added to the cache');
 					}).open();
@@ -179,7 +179,7 @@ export class SettingTab extends PluginSettingTab {
 			.addButton((button) => {
 				button.setButtonText('Reset').onClick(() => {
 					new ConfirmModal(app, async () => {
-						await clearCache(app, plugin.settings);
+						await clearCache(plugin);
 						new Notice('All images have been removed from the cache');
 					}).open();
 				});
