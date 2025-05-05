@@ -97,11 +97,11 @@ export async function compressImages(
 
 	// Reject if compression is already in progress
 	const compressionStatus: CompressionStatus | null =
-		await plugin.forage.getItem(LocalStoreKey.CompressionStatus);
+		await plugin.forage.getItem(LocalStoreKey.COMPRESSION_STATUS);
 
 	if (compressionStatus === CompressionStatus.Compressing) {
 		const imageCount: string | null = await plugin.forage.getItem(
-			LocalStoreKey.ImagesNumberAwaitingCompression,
+			LocalStoreKey.PENDING_COMPRESSION_COUNT,
 		);
 
 		new Notice(
@@ -114,13 +114,13 @@ export async function compressImages(
 
 	// Set CompressionStatus to Compressing
 	await plugin.forage.setItem(
-		LocalStoreKey.CompressionStatus,
+		LocalStoreKey.COMPRESSION_STATUS,
 		CompressionStatus.Compressing,
 	);
 
 	// Set the images to be compressed
 	await plugin.forage.setItem(
-		LocalStoreKey.ImagesNumberAwaitingCompression,
+		LocalStoreKey.PENDING_COMPRESSION_COUNT,
 		images.length,
 	);
 
@@ -173,7 +173,7 @@ export async function compressImages(
 
 	// Set CompressionStatus to idle
 	await plugin.forage.setItem(
-		LocalStoreKey.CompressionStatus,
+		LocalStoreKey.COMPRESSION_STATUS,
 		CompressionStatus.Idle,
 	);
 

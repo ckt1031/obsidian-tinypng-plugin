@@ -29,7 +29,7 @@ export enum ImageCacheStatus {
 export enum ImageCompressionProgressStatus {
 	Compressed = 0,
 	AlreadyCompressed = 1,
-	Failed = 99,
+	Failed = 2,
 }
 
 export enum CompressionStatus {
@@ -38,6 +38,6 @@ export enum CompressionStatus {
 }
 
 export enum LocalStoreKey {
-	CompressionStatus = 'compressionStatus',
-	ImagesNumberAwaitingCompression = 'imagesNumberAwaitingCompression',
+	COMPRESSION_STATUS = 'compression-status',
+	PENDING_COMPRESSION_COUNT = 'pending-compression-count',
 }

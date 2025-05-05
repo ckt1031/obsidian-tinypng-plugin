@@ -54,7 +54,7 @@ export async function addImageToCache(plugin: TinypngPlugin, file: TFile) {
 	await plugin.saveImageCacheToLocalFile(hash, ImageCacheStatus.Compressed);
 
 	const imageCount: string | null = await plugin.forage.getItem(
-		LocalStoreKey.ImagesNumberAwaitingCompression,
+		LocalStoreKey.PENDING_COMPRESSION_COUNT,
 	);
 
 	if (imageCount) {
@@ -62,12 +62,10 @@ export async function addImageToCache(plugin: TinypngPlugin, file: TFile) {
 
 		await (newImageCount > 0
 			? plugin.forage.setItem(
-					LocalStoreKey.ImagesNumberAwaitingCompression,
+					LocalStoreKey.PENDING_COMPRESSION_COUNT,
 					newImageCount,
 				)
-			: plugin.forage.removeItem(
-					LocalStoreKey.ImagesNumberAwaitingCompression,
-				));
+			: plugin.forage.removeItem(LocalStoreKey.PENDING_COMPRESSION_COUNT));
 	}
 }
 
