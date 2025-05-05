@@ -18,16 +18,17 @@ async function getCacheFilePath(app: App, settings: PluginSettings) {
 }
 
 /**
- * @deprecated
- * Remains compatible with version <= 0.2.0
+ * Remains compatible with version <= `0.2.0`
  */
 function getItemKeyByFileNameSize(item: TFile) {
-	// NO need to store the path, the name and size is ok to identify the unique file
 	// Example: selfie.jpg (2000 bytes)
 	// Key: selfie.jpg_2000
 	return `${encodeURIComponent(item.name)}-${String(item.stat.size)}`;
 }
 
+/**
+ * Added since `0.3.0`
+ */
 async function getItemKeyByHash(item: TFile) {
 	const binary = await item.vault.readBinary(item);
 	const uint8Array = new Uint8Array(binary);
@@ -46,8 +47,8 @@ export async function checkImageFromCache(
 		JSON.parse(cacheFile);
 
 	// Remains compatible with version <= 0.2.0, will be removed in future versions
-	const oldComparison =
-		cache[getItemKeyByFileNameSize(file)] === ImageCacheStatus.Compressed;
+	const oldKey = getItemKeyByFileNameSize(file);
+	const oldComparison = cache[oldKey] === ImageCacheStatus.Compressed;
 
 	const hash = await getItemKeyByHash(file);
 	const newComparison = cache[hash] === ImageCacheStatus.Compressed;
