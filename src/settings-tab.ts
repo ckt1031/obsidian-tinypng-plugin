@@ -198,25 +198,37 @@ export class SettingTab extends PluginSettingTab {
 				});
 
 			for (const path of plugin.settings.allowedFolders) {
-				new Setting(containerEl).setName(path).addButton((btn) => {
-					btn.setIcon('cross');
-					btn.setTooltip('Delete this folder from the allowed folders list');
-					btn.onClick(async () => {
-						if (btn.buttonEl.textContent === '') {
-							btn.setButtonText('Click once more to confirm removal');
-							setTimeout(() => {
-								btn.setIcon('cross');
-							}, 5000);
-						} else {
-							if (btn.buttonEl.parentElement?.parentElement) {
-								btn.buttonEl.parentElement.parentElement.remove();
+				const order = plugin.settings.allowedFolders.indexOf(path) + 1;
+
+				let folderText = `${order}: <code>${path}</code>`;
+
+				const folderInfo = this.plugin.app.vault.getFolderByPath(path);
+
+				if (!folderInfo) {
+					folderText += ' <strong>(Not found)</strong>';
+				}
+
+				new Setting(containerEl)
+					.setName(this.createFragmentWithHTML(folderText))
+					.addButton((btn) => {
+						btn.setIcon('cross');
+						btn.setTooltip('Delete this folder from the allowed folders list');
+						btn.onClick(async () => {
+							if (btn.buttonEl.textContent === '') {
+								btn.setButtonText('Click once more to confirm removal');
+								setTimeout(() => {
+									btn.setIcon('cross');
+								}, 5000);
+							} else {
+								if (btn.buttonEl.parentElement?.parentElement) {
+									btn.buttonEl.parentElement.parentElement.remove();
+								}
+								plugin.settings.allowedFolders =
+									plugin.settings.allowedFolders.filter((p) => p !== path);
+								await plugin.saveSettings();
 							}
-							plugin.settings.allowedFolders =
-								plugin.settings.allowedFolders.filter((p) => p !== path);
-							await plugin.saveSettings();
-						}
+						});
 					});
-				});
 			}
 		} else {
 			containerEl.createEl('h2', { text: 'Ignored Folders' });
@@ -232,25 +244,39 @@ export class SettingTab extends PluginSettingTab {
 				});
 
 			for (const path of plugin.settings.ignoredFolders) {
-				new Setting(containerEl).setName(path).addButton((btn) => {
-					btn.setIcon('cross');
-					btn.setTooltip('Delete this folder from the ignored folders list');
-					btn.onClick(async () => {
-						if (btn.buttonEl.textContent === '') {
-							btn.setButtonText('Click once more to confirm removal');
-							setTimeout(() => {
-								btn.setIcon('cross');
-							}, 5000);
-						} else {
-							if (btn.buttonEl.parentElement?.parentElement) {
-								btn.buttonEl.parentElement.parentElement.remove();
+				const order = plugin.settings.ignoredFolders.indexOf(path) + 1;
+
+				let folderText = `${order}: <code>${path}</code>`;
+
+				const folderInfo = plugin.app.vault.getAbstractFileByPath(path);
+
+				if (!folderInfo) {
+					folderText += ' <strong>(Not found)</strong>';
+				}
+
+				new Setting(containerEl)
+					.setName(
+						this.createFragmentWithHTML(`${order}: <code>${path}</code>`),
+					)
+					.addButton((btn) => {
+						btn.setIcon('cross');
+						btn.setTooltip('Delete this folder from the ignored folders list');
+						btn.onClick(async () => {
+							if (btn.buttonEl.textContent === '') {
+								btn.setButtonText('Click once more to confirm removal');
+								setTimeout(() => {
+									btn.setIcon('cross');
+								}, 5000);
+							} else {
+								if (btn.buttonEl.parentElement?.parentElement) {
+									btn.buttonEl.parentElement.parentElement.remove();
+								}
+								plugin.settings.ignoredFolders =
+									plugin.settings.ignoredFolders.filter((p) => p !== path);
+								await plugin.saveSettings();
 							}
-							plugin.settings.ignoredFolders =
-								plugin.settings.ignoredFolders.filter((p) => p !== path);
-							await plugin.saveSettings();
-						}
+						});
 					});
-				});
 			}
 		}
 	}
