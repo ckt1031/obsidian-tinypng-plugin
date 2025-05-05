@@ -1,8 +1,7 @@
-import type { App, TFile } from 'obsidian';
+import type { TFile } from 'obsidian';
 
 import { generateFileHash } from './crypto';
 import type TinypngPlugin from './main';
-import store from './store';
 import { ImageCacheStatus, LocalStoreKey } from './types';
 
 export async function getCacheFilePath(plugin: TinypngPlugin) {
@@ -54,7 +53,7 @@ export async function addImageToCache(plugin: TinypngPlugin, file: TFile) {
 	const hash = await getItemKeyByHash(file);
 	await plugin.saveImageCacheToLocalFile(hash, ImageCacheStatus.Compressed);
 
-	const imageCount: string | null = await store.getItem(
+	const imageCount: string | null = await plugin.forage.getItem(
 		LocalStoreKey.ImagesNumberAwaitingCompression,
 	);
 
@@ -62,11 +61,13 @@ export async function addImageToCache(plugin: TinypngPlugin, file: TFile) {
 		const newImageCount = Number(imageCount) - 1;
 
 		await (newImageCount > 0
-			? store.setItem(
+			? plugin.forage.setItem(
 					LocalStoreKey.ImagesNumberAwaitingCompression,
 					newImageCount,
 				)
-			: store.removeItem(LocalStoreKey.ImagesNumberAwaitingCompression));
+			: plugin.forage.removeItem(
+					LocalStoreKey.ImagesNumberAwaitingCompression,
+				));
 	}
 }
 

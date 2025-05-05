@@ -16,5 +16,6 @@
 		"strictNullChecks": true,
 		"target": "ES2024"
 	},
-	"include": ["**/*.ts", "*.mjs"]
+	"include": ["**/*.ts", "*.mjs"],
+	"exclude": ["node_modules"]
 }

@@ -1,9 +1,7 @@
-import { type App, Notice, type TFile, request, requestUrl } from 'obsidian';
+import { Notice, type TFile, request, requestUrl } from 'obsidian';
 
 import { addImageToCache, checkImageFromCache } from './cache';
 import type TinypngPlugin from './main';
-import store from './store';
-import type { PluginSettings } from './types';
 import {
 	CompressionStatus,
 	ImageCompressionProgressStatus,
@@ -98,12 +96,11 @@ export async function compressImages(
 	}
 
 	// Reject if compression is already in progress
-	const compressionStatus: CompressionStatus | null = await store.getItem(
-		LocalStoreKey.CompressionStatus,
-	);
+	const compressionStatus: CompressionStatus | null =
+		await plugin.forage.getItem(LocalStoreKey.CompressionStatus);
 
 	if (compressionStatus === CompressionStatus.Compressing) {
-		const imageCount: string | null = await store.getItem(
+		const imageCount: string | null = await plugin.forage.getItem(
 			LocalStoreKey.ImagesNumberAwaitingCompression,
 		);
 
@@ -116,13 +113,13 @@ export async function compressImages(
 	}
 
 	// Set CompressionStatus to Compressing
-	await store.setItem(
+	await plugin.forage.setItem(
 		LocalStoreKey.CompressionStatus,
 		CompressionStatus.Compressing,
 	);
 
 	// Set the images to be compressed
-	await store.setItem(
+	await plugin.forage.setItem(
 		LocalStoreKey.ImagesNumberAwaitingCompression,
 		images.length,
 	);
@@ -175,7 +172,10 @@ export async function compressImages(
 	await Promise.all(promises);
 
 	// Set CompressionStatus to idle
-	await store.setItem(LocalStoreKey.CompressionStatus, CompressionStatus.Idle);
+	await plugin.forage.setItem(
+		LocalStoreKey.CompressionStatus,
+		CompressionStatus.Idle,
+	);
 
 	new Notice(
 		`Compression complete. Success: ${successCount}, Ignored: ${bypassedCount}, Failed: ${failedCount}`,

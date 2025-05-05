@@ -5,7 +5,6 @@ import { getAllImages } from './compress';
 import type TinypngPlugin from './main';
 import { AddFolderModal, AddFolderMode } from './modals/add-folder';
 import ConfirmModal from './modals/confirm';
-import store from './store';
 
 export class SettingTab extends PluginSettingTab {
 	plugin: TinypngPlugin;
@@ -144,7 +143,7 @@ export class SettingTab extends PluginSettingTab {
 			.addButton((button) => {
 				button.setButtonText('Reset').onClick(() => {
 					new ConfirmModal(app, async () => {
-						await store.clear();
+						await this.plugin.forage.clear();
 						new Notice('Local store has been reset');
 					}).open();
 				});

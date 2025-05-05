@@ -1,6 +1,7 @@
 import { Plugin, addIcon } from 'obsidian';
 import { safeParseAsync } from 'valibot';
 
+import * as localforage from 'localforage';
 import { merge } from 'rambda';
 import { getCacheFilePath } from './cache';
 import { compressImages, getAllImages } from './compress';
@@ -28,11 +29,17 @@ const DEFAULT_SETTINGS: PluginSettings = {
 
 export default class TinypngPlugin extends Plugin {
 	settings: PluginSettings;
+	forage: typeof localforage;
 	imageHashes: Map<string, ImageCacheStatus>;
 
 	async onload() {
 		await this.loadSettings();
 		await this.loadImageCacheFromLocalFile();
+
+		// Initialize localforage instance
+		this.forage = localforage.createInstance({
+			name: `${this.manifest.id}-${this.app.appId}`,
+		});
 
 		addIcon('compress', compressSVGImage);
 
