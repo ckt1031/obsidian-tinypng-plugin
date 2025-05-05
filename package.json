@@ -16,6 +16,7 @@
 	},
 	"dependencies": {
 		"localforage": "1.10.0",
+		"rambda": "^10.1.0",
 		"valibot": "1.0.0"
 	},
 	"devDependencies": {

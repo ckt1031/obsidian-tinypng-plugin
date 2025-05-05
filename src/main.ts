@@ -1,6 +1,7 @@
 import { Plugin, addIcon } from 'obsidian';
 import { safeParseAsync } from 'valibot';
 
+import { merge } from 'rambda';
 import { compressImages, getAllImages } from './compress';
 import { CACHE_JSON_FILE } from './config';
 import compressSVGImage from './icons/compress.svg';
@@ -68,11 +69,7 @@ export default class TinypngPlugin extends Plugin {
 			return;
 		}
 
-		this.settings = Object.assign(
-			{},
-			DEFAULT_SETTINGS,
-			deobfuscateConfig(localData),
-		);
+		this.settings = merge(DEFAULT_SETTINGS)(deobfuscateConfig(localData));
 	}
 
 	async saveSettings() {
