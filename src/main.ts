@@ -99,6 +99,7 @@ export default class TinypngPlugin extends Plugin {
 
 				menu.addItem((item) => {
 					item.setTitle('Compress image');
+					item.setIcon('compress');
 					item.onClick(async () => {
 						await this.onMenuButtonCreate(menu, detailedFile);
 					});
