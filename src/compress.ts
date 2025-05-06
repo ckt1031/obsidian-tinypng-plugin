@@ -100,7 +100,7 @@ export async function compressImages(
 		await plugin.forage.getItem(LocalStoreKey.COMPRESSION_STATUS);
 
 	if (compressionStatus === CompressionStatus.Compressing) {
-		const imageCount: string | null = await plugin.forage.getItem(
+		const imageCount = await plugin.forage.getItem<string>(
 			LocalStoreKey.PENDING_COMPRESSION_COUNT,
 		);
 
