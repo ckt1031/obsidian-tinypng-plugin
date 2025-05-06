@@ -184,6 +184,40 @@ export class SettingTab extends PluginSettingTab {
 				});
 			});
 
+		containerEl.createEl('h2', { text: 'Editor Behavior' });
+
+		containerEl.createEl('p', {
+			text: 'Reminder: This is constrained by allowed and disallowed folders, which can be configured in the bottom.',
+		});
+
+		new Setting(containerEl)
+			.setName('Compress on paste')
+			.setDesc(
+				'Compress images when pasted into the editor, disable this option if you encounter compatibility issues with other plugins.',
+			)
+			.addToggle((toggle) => {
+				toggle
+					.setValue(plugin.settings.compressOnPaste)
+					.onChange(async (value) => {
+						plugin.settings.compressOnPaste = value;
+						await plugin.saveSettings();
+					});
+			});
+
+		new Setting(containerEl)
+			.setName('Compress on new file')
+			.setDesc(
+				'All new created image in the vault will be compressed, no matter how it is formed.',
+			)
+			.addToggle((toggle) => {
+				toggle
+					.setValue(plugin.settings.compressOnFileSystemImageCreated)
+					.onChange(async (value) => {
+						plugin.settings.compressOnFileSystemImageCreated = value;
+						await plugin.saveSettings();
+					});
+			});
+
 		if (plugin.settings.compressAllowedFoldersOnly) {
 			containerEl.createEl('h2', { text: 'Allowed Folders' });
 

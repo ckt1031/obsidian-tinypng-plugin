@@ -12,6 +12,8 @@ const DEFAULT_SETTINGS: PluginSettings = {
 	cacheFilePath: '.ok/cache.json',
 	compressAllowedFoldersOnly: false,
 	extraImageFormats: 'png,jpg,webp',
+	compressOnFileSystemImageCreated: false,
+	compressOnPaste: false,
 };
 
 describe('obfuscateConfig and deobfuscateConfig', () => {

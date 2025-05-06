@@ -1,10 +1,11 @@
-import { Plugin, addIcon } from 'obsidian';
+import { Notice, Plugin, type TAbstractFile, addIcon } from 'obsidian';
 import { safeParseAsync } from 'valibot';
 
 import * as localforage from 'localforage';
 import { merge } from 'rambda';
 import { getCacheFilePath } from './cache';
 import { compressImages, getAllImages } from './compress';
+import { checkIsFileImageAndAllowed, compressSingle } from './compress';
 import { CACHE_JSON_FILE } from './config';
 import compressSVGImage from './icons/compress.svg';
 import { deobfuscateConfig, obfuscateConfig } from './obfuscate-config';
@@ -14,7 +15,7 @@ import {
 	ObfuscatedPluginSettingsSchema,
 	type PluginSettings,
 } from './types';
-import type { ImageCacheStatus } from './types';
+import { type ImageCacheStatus, ImageCompressionProgressStatus } from './types';
 
 const DEFAULT_SETTINGS: PluginSettings = {
 	tinypngApiKey: '',
@@ -25,6 +26,8 @@ const DEFAULT_SETTINGS: PluginSettings = {
 	cacheFilePath: CACHE_JSON_FILE,
 	compressAllowedFoldersOnly: false,
 	extraImageFormats: 'png,webp',
+	compressOnPaste: false,
+	compressOnFileSystemImageCreated: false,
 };
 
 export default class TinypngPlugin extends Plugin {
@@ -61,6 +64,45 @@ export default class TinypngPlugin extends Plugin {
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SettingTab(this));
+
+		this.app.workspace.onLayoutReady(() => {
+			this.registerEvent(
+				this.app.vault.on('create', (file) => this.onFileCreated(this, file)),
+			);
+		});
+	}
+
+	private isImagePasted(file: TAbstractFile) {
+		return file.name.startsWith('Pasted image');
+	}
+
+	private async onFileCreated(plugin: TinypngPlugin, file: TAbstractFile) {
+		const globallyAllowed = plugin.settings.compressOnFileSystemImageCreated;
+
+		if (!globallyAllowed) {
+			// We still have to check if compress pasted images are allowed
+			if (!plugin.isImagePasted(file)) return;
+			if (!plugin.settings.compressOnPaste) return;
+		}
+
+		const detailedFile = plugin.app.vault.getFileByPath(file.path);
+
+		if (!detailedFile) return;
+
+		if (!checkIsFileImageAndAllowed(plugin, detailedFile)) return;
+
+		console.log(`Compressing: ${detailedFile.name}`);
+
+		const result = await compressSingle(plugin, detailedFile);
+
+		const message = {
+			[ImageCompressionProgressStatus.Compressed]: 'successfully',
+			[ImageCompressionProgressStatus.Failed]: 'failed',
+			[ImageCompressionProgressStatus.AlreadyCompressed]:
+				'aborted, already compressed',
+		};
+
+		new Notice(`Compression ${message[result]}: ${detailedFile.name}`);
 	}
 
 	// This is called when the plugin is deactivated

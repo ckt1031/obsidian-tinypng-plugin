@@ -9,6 +9,18 @@ export const PluginSettingsSchema = v.object({
 	allowedFolders: v.array(v.string()),
 	ignoredFolders: v.array(v.string()),
 	extraImageFormats: v.string(),
+	/**
+	 * Compress on new image file pasted into the editor,
+	 * under constrains of allowed and disallowed folders.
+	 */
+	compressOnPaste: v.boolean(),
+	/**
+	 * Ignore other file compression settings,
+	 * directly compress new files under constrains of allowed and disallowed folders.
+	 *
+	 * If the value is true, it will ignore `compressOnPaste`.
+	 */
+	compressOnFileSystemImageCreated: v.boolean(),
 });
 
 export const ObfuscatedPluginSettingsSchema = v.object({
