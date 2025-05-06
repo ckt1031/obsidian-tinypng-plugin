@@ -264,54 +264,52 @@ export class SettingTab extends PluginSettingTab {
 						});
 					});
 			}
-		} else {
-			containerEl.createEl('h2', { text: 'Ignored Folders' });
+		}
+
+		containerEl.createEl('h2', { text: 'Ignored Folders' });
+
+		new Setting(containerEl)
+			.setName('Add')
+			.setDesc('Add a folder to the ignored folders list')
+			.addButton((button) => {
+				button.setButtonText('Add').onClick(async () => {
+					await plugin.app.setting.close();
+					new AddFolderModal(plugin, AddFolderMode.Ignored).open();
+				});
+			});
+
+		for (const path of plugin.settings.ignoredFolders) {
+			const order = plugin.settings.ignoredFolders.indexOf(path) + 1;
+
+			let folderText = `${order}: <code>${path}</code>`;
+
+			const folderInfo = plugin.app.vault.getAbstractFileByPath(path);
+
+			if (!folderInfo) {
+				folderText += ' <strong>(Not found)</strong>';
+			}
 
 			new Setting(containerEl)
-				.setName('Add')
-				.setDesc('Add a folder to the ignored folders list')
-				.addButton((button) => {
-					button.setButtonText('Add').onClick(async () => {
-						await plugin.app.setting.close();
-						new AddFolderModal(plugin, AddFolderMode.Ignored).open();
+				.setName(this.createFragmentWithHTML(`${order}: <code>${path}</code>`))
+				.addButton((btn) => {
+					btn.setIcon('cross');
+					btn.setTooltip('Delete this folder from the ignored folders list');
+					btn.onClick(async () => {
+						if (btn.buttonEl.textContent === '') {
+							btn.setButtonText('Click once more to confirm removal');
+							setTimeout(() => {
+								btn.setIcon('cross');
+							}, 5000);
+						} else {
+							if (btn.buttonEl.parentElement?.parentElement) {
+								btn.buttonEl.parentElement.parentElement.remove();
+							}
+							plugin.settings.ignoredFolders =
+								plugin.settings.ignoredFolders.filter((p) => p !== path);
+							await plugin.saveSettings();
+						}
 					});
 				});
-
-			for (const path of plugin.settings.ignoredFolders) {
-				const order = plugin.settings.ignoredFolders.indexOf(path) + 1;
-
-				let folderText = `${order}: <code>${path}</code>`;
-
-				const folderInfo = plugin.app.vault.getAbstractFileByPath(path);
-
-				if (!folderInfo) {
-					folderText += ' <strong>(Not found)</strong>';
-				}
-
-				new Setting(containerEl)
-					.setName(
-						this.createFragmentWithHTML(`${order}: <code>${path}</code>`),
-					)
-					.addButton((btn) => {
-						btn.setIcon('cross');
-						btn.setTooltip('Delete this folder from the ignored folders list');
-						btn.onClick(async () => {
-							if (btn.buttonEl.textContent === '') {
-								btn.setButtonText('Click once more to confirm removal');
-								setTimeout(() => {
-									btn.setIcon('cross');
-								}, 5000);
-							} else {
-								if (btn.buttonEl.parentElement?.parentElement) {
-									btn.buttonEl.parentElement.parentElement.remove();
-								}
-								plugin.settings.ignoredFolders =
-									plugin.settings.ignoredFolders.filter((p) => p !== path);
-								await plugin.saveSettings();
-							}
-						});
-					});
-			}
 		}
 	}
 }
