@@ -18,10 +18,7 @@ export function getAllImages(plugin: TinypngPlugin) {
 	return files.filter((file) => checkIsFileImageAndAllowed(plugin, file));
 }
 
-export function checkIsFileImageAndAllowed(
-	plugin: TinypngPlugin,
-	image: TFile,
-) {
+export function checkIsFileImage(plugin: TinypngPlugin, image: TFile) {
 	const extension = image.extension;
 	const customFormats = plugin.settings.extraImageFormats.split(',');
 	const isExtensionValid = [
@@ -29,6 +26,13 @@ export function checkIsFileImageAndAllowed(
 		...defaultAllowedFormats,
 	].includes(extension);
 
+	return isExtensionValid;
+}
+
+export function checkIsImageInSpecificFolder(
+	plugin: TinypngPlugin,
+	image: TFile,
+) {
 	let status = plugin.settings.ignoredFolders.some((folder) => {
 		return image.path.startsWith(folder);
 	});
@@ -41,13 +45,26 @@ export function checkIsFileImageAndAllowed(
 		});
 	}
 
+	return !status;
+}
+
+export function checkIsFileImageAndAllowed(
+	plugin: TinypngPlugin,
+	image: TFile,
+) {
+	const isExtensionValid = checkIsFileImage(plugin, image);
+	const status = checkIsImageInSpecificFolder(plugin, image);
 	return isExtensionValid && !status;
 }
 
-export async function compressSingle(plugin: TinypngPlugin, image: TFile) {
+export async function compressSingle(
+	plugin: TinypngPlugin,
+	image: TFile,
+	checkCompressed = true,
+) {
 	try {
 		// Check if the image is already compressed
-		if (await checkImageFromCache(plugin, image)) {
+		if (checkCompressed && (await checkImageFromCache(plugin, image))) {
 			return ImageCompressionProgressStatus.AlreadyCompressed;
 		}
 

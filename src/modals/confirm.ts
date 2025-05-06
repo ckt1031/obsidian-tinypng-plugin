@@ -4,16 +4,19 @@ import { Modal, Setting } from 'obsidian';
 export default class ConfirmModal extends Modal {
 	onConfirm: () => void | Promise<void>;
 	onCancel?: () => void | Promise<void>;
+	warningMessage: string;
 
 	// Action sync function or async function
 	constructor(
 		app: App,
 		onConfirm: () => void | Promise<void>,
 		onCancel?: () => void | Promise<void>,
+		warningMessage = 'This action cannot be undone, please confirm to proceed.',
 	) {
 		super(app);
 		this.onConfirm = onConfirm;
 		if (onCancel) this.onCancel = onCancel;
+		this.warningMessage = warningMessage;
 	}
 
 	onOpen() {
@@ -22,7 +25,7 @@ export default class ConfirmModal extends Modal {
 		this.setTitle('Are you sure you want to proceed?');
 
 		contentEl.createEl('p', {
-			text: 'This action cannot be undone, please confirm to proceed.',
+			text: this.warningMessage,
 		});
 
 		new Setting(contentEl)

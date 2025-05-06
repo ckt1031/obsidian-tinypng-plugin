@@ -1,13 +1,29 @@
-import { Notice, Plugin, type TAbstractFile, addIcon } from 'obsidian';
+import {
+	type Menu,
+	Notice,
+	Plugin,
+	type TAbstractFile,
+	type TFile,
+	addIcon,
+} from 'obsidian';
 import { safeParseAsync } from 'valibot';
 
 import * as localforage from 'localforage';
 import { merge } from 'rambda';
-import { getCacheFilePath } from './cache';
-import { compressImages, getAllImages } from './compress';
-import { checkIsFileImageAndAllowed, compressSingle } from './compress';
+import { checkImageFromCache, getCacheFilePath } from './cache';
+import {
+	checkIsImageInSpecificFolder,
+	compressImages,
+	getAllImages,
+} from './compress';
+import {
+	checkIsFileImage,
+	checkIsFileImageAndAllowed,
+	compressSingle,
+} from './compress';
 import { CACHE_JSON_FILE } from './config';
 import compressSVGImage from './icons/compress.svg';
+import ConfirmModal from './modals/confirm';
 import { deobfuscateConfig, obfuscateConfig } from './obfuscate-config';
 import { SettingTab } from './settings-tab';
 import {
@@ -70,10 +86,68 @@ export default class TinypngPlugin extends Plugin {
 				this.app.vault.on('create', (file) => this.onFileCreated(this, file)),
 			);
 		});
+
+		this.registerEvent(
+			this.app.workspace.on('file-menu', (menu, file) => {
+				const detailedFile = this.app.vault.getFileByPath(file.path);
+
+				if (!detailedFile) return;
+
+				const isImage = checkIsFileImage(this, detailedFile);
+
+				if (!isImage) return;
+
+				menu.addItem((item) => {
+					item.setTitle('Compress image');
+					item.onClick(async () => {
+						await this.onMenuButtonCreate(menu, detailedFile);
+					});
+				});
+			}),
+		);
 	}
 
 	private isImagePasted(file: TAbstractFile) {
 		return file.name.startsWith('Pasted image');
+	}
+
+	private async onMenuButtonCreate(menu: Menu, detailedFile: TFile) {
+		const compressedAlready = await checkImageFromCache(this, detailedFile);
+
+		if (compressedAlready) {
+			new Notice(`Image ${detailedFile.name} is already compressed`);
+			return;
+		}
+
+		const doCompression = async () => {
+			console.log(`Compressing ${detailedFile.name}`);
+
+			const result = await compressSingle(this, detailedFile);
+
+			this.showPostCompressionNotice(detailedFile, result);
+		};
+
+		if (!checkIsImageInSpecificFolder(this, detailedFile)) {
+			const msg =
+				'This image is located in a folder that may not be intended for compression, do you want to compress it anyway?';
+			new ConfirmModal(this.app, doCompression, undefined, msg).open();
+			return;
+		}
+
+		await doCompression();
+	}
+
+	private showPostCompressionNotice(
+		detailedFile: TFile,
+		result: ImageCompressionProgressStatus,
+	) {
+		const message = {
+			[ImageCompressionProgressStatus.Compressed]: 'successfully',
+			[ImageCompressionProgressStatus.Failed]: 'failed',
+			[ImageCompressionProgressStatus.AlreadyCompressed]:
+				'aborted, already compressed',
+		};
+		new Notice(`Compression ${message[result]}: ${detailedFile.name}`);
 	}
 
 	private async onFileCreated(plugin: TinypngPlugin, file: TAbstractFile) {
@@ -94,15 +168,7 @@ export default class TinypngPlugin extends Plugin {
 		console.log(`Compressing: ${detailedFile.name}`);
 
 		const result = await compressSingle(plugin, detailedFile);
-
-		const message = {
-			[ImageCompressionProgressStatus.Compressed]: 'successfully',
-			[ImageCompressionProgressStatus.Failed]: 'failed',
-			[ImageCompressionProgressStatus.AlreadyCompressed]:
-				'aborted, already compressed',
-		};
-
-		new Notice(`Compression ${message[result]}: ${detailedFile.name}`);
+		this.showPostCompressionNotice(detailedFile, result);
 	}
 
 	// This is called when the plugin is deactivated
