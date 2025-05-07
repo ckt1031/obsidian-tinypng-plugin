@@ -45,6 +45,13 @@ export async function checkImageFromCache(plugin: TinypngPlugin, file: TFile) {
 	const hash = await getItemKeyByHash(file);
 	const newComparison = cache.get(hash) === ImageCacheStatus.Compressed;
 
+	// Upgrade to new hash key if old key is found
+	if (oldComparison) {
+		// Remove old key to avoid duplication
+		await plugin.removeImageCacheFromLocalFile(oldKey);
+		await plugin.saveImageCacheToLocalFile(hash, ImageCacheStatus.Compressed);
+	}
+
 	return oldComparison || newComparison;
 }
 

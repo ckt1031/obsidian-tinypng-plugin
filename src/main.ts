@@ -197,6 +197,14 @@ export default class TinypngPlugin extends Plugin {
 		await this.app.vault.adapter.write(cacheStorePath, cacheFile);
 	}
 
+	async removeImageCacheFromLocalFile(key: string) {
+		this.imageHashes.delete(key);
+
+		const cacheStorePath = await getCacheFilePath(this);
+		const cacheFile = JSON.stringify(Object.fromEntries(this.imageHashes));
+		await this.app.vault.adapter.write(cacheStorePath, cacheFile);
+	}
+
 	async loadSettings() {
 		const localData: ObfuscatedPluginSettings = await this.loadData();
 
