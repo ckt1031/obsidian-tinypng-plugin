@@ -188,18 +188,16 @@ export default class TinypngPlugin extends Plugin {
 	}
 
 	async saveImageCacheToLocalFile(key: string, value: ImageCacheStatus) {
-		// Add new key to Map (memory)
 		this.imageHashes.set(key, value);
-
-		// Save the updated Map to the cache file
-		const cacheStorePath = await getCacheFilePath(this);
-		const cacheFile = JSON.stringify(Object.fromEntries(this.imageHashes));
-		await this.app.vault.adapter.write(cacheStorePath, cacheFile);
+		await this.persistImageCache();
 	}
 
 	async removeImageCacheFromLocalFile(key: string) {
 		this.imageHashes.delete(key);
+		await this.persistImageCache();
+	}
 
+	private async persistImageCache() {
 		const cacheStorePath = await getCacheFilePath(this);
 		const cacheFile = JSON.stringify(Object.fromEntries(this.imageHashes));
 		await this.app.vault.adapter.write(cacheStorePath, cacheFile);
