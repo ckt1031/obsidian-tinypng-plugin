@@ -182,14 +182,12 @@ export default class TinypngPlugin extends Plugin {
 		const cacheStorePath = await getCacheFilePath(this);
 		const cacheFile = await this.app.vault.adapter.read(cacheStorePath);
 
-
 		try {
 			const parsedObject = JSON.parse(cacheFile);
 
 			// Save to memory
 			this.imageHashes = new Map(Object.entries(parsedObject));
-		}
-		catch (error) {
+		} catch (error) {
 			new Notice('Failed to parse cache file, local store has been reset.');
 			console.error('Failed to parse cache file, using defaults.');
 			this.imageHashes = new Map();
