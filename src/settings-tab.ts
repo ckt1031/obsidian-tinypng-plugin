@@ -290,7 +290,7 @@ export class SettingTab extends PluginSettingTab {
 			}
 
 			new Setting(containerEl)
-				.setName(this.createFragmentWithHTML(`${order}: <code>${path}</code>`))
+				.setName(this.createFragmentWithHTML(folderText))
 				.addButton((btn) => {
 					btn.setIcon('cross');
 					btn.setTooltip('Delete this folder from the ignored folders list');

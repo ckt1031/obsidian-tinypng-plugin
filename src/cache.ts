@@ -82,4 +82,5 @@ export async function addImageToCache(plugin: TinypngPlugin, file: TFile) {
 export async function clearCache(plugin: TinypngPlugin) {
 	const cacheFilePath = await getCacheFilePath(plugin);
 	await plugin.app.vault.adapter.write(cacheFilePath, '{}');
+	plugin.imageHashes.clear();
 }
